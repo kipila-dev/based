@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "forje"
+dynamic = ["version"]
+description = "The build system for your design system"
+readme = "../../README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Kipila Ltd", email = "hello@kipila.dev" }]
+dependencies = ["coloraide", "pydantic", "resforge", "starlark-pyo3", "typer"]
+
+[project.urls]
+Homepage = "https://kipila.dev"
+Repository = "https://github.com/kipila-dev/forje"
+
+[project.scripts]
+forje = "forje.cli.main:app"
+
+[project.entry-points."forje.dsl"]
+core = "forje.dsl.core:module"
+stdlib = "forje.dsl.stdlib:module"
+wcag = "forje.wcag.dsl:module"
+
+[project.entry-points."forje.pass"]
+wcag = "forje.wcag.passes:WCAGValidation"
+
+[project.entry-points."forje.backend"]
+android = "forje.backend.android:Android"
+apple = "forje.backend.apple:Apple"
+
+[tool.hatch.version]
+path = "src/forje/__init__.py"
+
+[tool.uv.sources]
+resforge = { workspace = true }
