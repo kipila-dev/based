@@ -5,6 +5,7 @@ requires-python = ">=3.12"
 [manifest]
 members = [
     "forje",
+    "forje-tailwind",
     "resforge",
 ]
 
@@ -119,6 +120,16 @@ requires-dist = [
     { name = "starlark-pyo3" },
     { name = "typer" },
 ]
+
+[[package]]
+name = "forje-tailwind"
+source = { editable = "packages/forje-tailwind" }
+dependencies = [
+    { name = "forje" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "forje", editable = "packages/forje" }]
 
 [[package]]
 name = "identify"

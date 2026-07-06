@@ -20,7 +20,7 @@ TokenKind = struct(
     Color=_TokenKind("color"),
 )
 
-ColorType = record(coords=list[float], alpha=float, space=_ColorSpace)
+ColorType = record(coords=list[int | float], alpha=float, space=_ColorSpace)
 
 TokenType = record(
     name=str,
@@ -60,9 +60,9 @@ def Color(
 
     if (
         len(value) == 3
-        and isinstance(value[0], float)
-        and isinstance(value[1], float)
-        and isinstance(value[2], float)
+        and isinstance(value[0], int | float)
+        and isinstance(value[1], int | float)
+        and isinstance(value[2], int | float)
     ):
         return ColorType(
             coords=[value[0], value[1], value[2]],
