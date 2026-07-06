@@ -33,6 +33,8 @@ def load_plugins() -> tuple[list[Module], list[Pass], dict[str, Backend]]:
 
         modules.append(module)
 
+    modules.sort(key=lambda m: m.priority)
+
     passes: list[Pass] = []
     for ep in importlib.metadata.entry_points(group="forje.pass"):
         try:

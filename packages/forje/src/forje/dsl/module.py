@@ -17,14 +17,16 @@ __all__ = ["Module"]
 class Module:
     """Manages exporting of Python definitions and Starlark sources to the DSL."""
 
-    def __init__(self, name: str | None) -> None:
+    def __init__(self, name: str | None, *, priority: int = 0) -> None:
         """Initialize a new DSL module.
 
         Args:
             name: Starlark module name. If omitted, the exported definitions
                 will be injected into the default Starlark module.
+            priority: Module load priority, lower values are loaded earlier.
         """
         self.name = name
+        self.priority = priority
         self.python: dict[str, Callable[..., object] | object] = {}
         self.starlark: list[str] = []
 
