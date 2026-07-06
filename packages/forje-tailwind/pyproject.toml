@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "forje-tailwind"
+dynamic = ["version"]
+description = "Tailwind plugin for Forje"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Kipila Ltd", email = "hello@kipila.dev" }]
+dependencies = ["forje"]
+
+[project.urls]
+Homepage = "https://kipila.dev"
+Repository = "https://github.com/kipila-dev/forje"
+
+[tool.hatch.version]
+path = "src/forje_tailwind/__init__.py"
+
+[project.entry-points."forje.dsl"]
+tailwind = "forje_tailwind.dsl:module"
+
+[tool.uv.sources]
+forje = { workspace = true }
