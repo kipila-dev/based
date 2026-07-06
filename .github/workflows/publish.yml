@@ -26,6 +26,9 @@ jobs:
       - name: Extract package name from tag
         id: pkg
         run: echo "name=${GITHUB_REF_NAME%%-*}" >> $GITHUB_OUTPUT
+      - name: Prepare package README
+        if: steps.pkg.outputs.name == 'forje'
+        run: cp README.md packages/forje/README.md
       - name: Build package
         run: uv build --package ${{ steps.pkg.outputs.name }}
       - name: Publish to PyPI
