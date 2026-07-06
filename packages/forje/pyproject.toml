@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "forje"
 dynamic = ["version"]
 description = "The build system for your design system"
-readme = "../../README.md"
+readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "Kipila Ltd", email = "hello@kipila.dev" }]
