@@ -1,0 +1,36 @@
+name: Publish to PyPI
+on:
+  push:
+    tags:
+      - 'resforge-v*'
+      - 'forje-v*'
+      - 'forje-tailwind-v*'
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8
+        with:
+          enable-cache: true
+      - name: Sync workspace
+        run: uv sync --frozen
+      - name: Extract package name from tag
+        id: pkg
+        run: echo "name=${GITHUB_REF_NAME%%-*}" >> $GITHUB_OUTPUT
+      - name: Build package
+        run: uv build --package ${{ steps.pkg.outputs.name }}
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-to-publish: |
+            packages/${{ steps.pkg.outputs.name }}/dist/*.whl
+            packages/${{ steps.pkg.outputs.name }}/dist/*.tar.gz
