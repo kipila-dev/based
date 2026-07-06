@@ -96,6 +96,21 @@ myplatform = "myplugin.backend:MyPlatformBackend"
 
 For a reference plugin implementation, see the built-in `forje.wcag` module.
 
+The following plugins are maintained alongside Forje and can be installed
+directly:
+
+[`forje-tailwind`](https://github.com/kipila-dev/forje/tree/main/packages/forje-tailwind):
+Tailwind CSS color palette
+
+```sh
+pip install forje-tailwind
+```
+
+```starlark
+load("tailwind", "tailwind")
+primary = Token("primary", tailwind.color.blue.c500)
+```
+
 ## License
 
 MIT
