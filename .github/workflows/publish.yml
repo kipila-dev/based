@@ -25,9 +25,9 @@ jobs:
         run: uv sync --frozen
       - name: Extract package name from tag
         id: pkg
-        run: echo "name=${GITHUB_REF_NAME%%-*}" >> $GITHUB_OUTPUT
+        run: echo "name=${GITHUB_REF_NAME%-v*}" >> $GITHUB_OUTPUT
       - name: Build package
-        run: uv build --package ${{ steps.pkg.outputs.name }} --out-dir dist/
+        run: uv build --package ${{ steps.pkg.outputs.name }}
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
