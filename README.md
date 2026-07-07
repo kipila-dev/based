@@ -74,23 +74,16 @@ Plugins expose new DSL functions, compiler passes and backends via Python entry
 points. For a reference plugin implementation, see the built-in `forje.wcag`
 module.
 
-**New DSL extension:**
-
 ```toml
+# DSL extension
 [project.entry-points."forje.dsl"]
 myplugin = "myplugin.dsl:myplugin_module"
-```
 
-**New compiler pass:**
-
-```toml
+# Compiler pass
 [project.entry-points."forje.pass"]
 myplugin = "myplugin.passes:MyValidation"
-```
 
-**New platform backend:**
-
-```toml
+# Platform backend
 [project.entry-points."forje.backend"]
 myplatform = "myplugin.backend:MyPlatformBackend"
 ```
