@@ -71,7 +71,8 @@ compile step, Forje will raise a validation error.
 ## Extending Forje
 
 Plugins expose new DSL functions, compiler passes and backends via Python entry
-points.
+points. For a reference plugin implementation, see the built-in `forje.wcag`
+module.
 
 **New DSL extension:**
 
@@ -93,8 +94,6 @@ myplugin = "myplugin.passes:MyValidation"
 [project.entry-points."forje.backend"]
 myplatform = "myplugin.backend:MyPlatformBackend"
 ```
-
-For a reference plugin implementation, see the built-in `forje.wcag` module.
 
 The following plugins are maintained alongside Forje and can be installed
 directly:
