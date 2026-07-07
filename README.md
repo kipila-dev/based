@@ -7,21 +7,16 @@ scripts are written in [Starlark](https://bazel.build/rules/language), the same
 language used by Bazel and Buck2.
 
 ```starlark
-# build.forje
+primary = Token("primary", Color("#38BDF8"))
+surface = Token("surface", dark=Color("#0F172A"), light=Color("#FFFFFF"))
+
 target(
     id="acme",
-    tokens=[
-        Token("primary", Color("#38BDF8")),
-        Token(
-            "surface",
-            dark=Color("#0F172A"),
-            light=Color("#FFFFFF"),
-        ),
-    ],
+    tokens=[primary, surface],
     artifacts=[
-        Artifact("android", "acme/res"),
-        Artifact("apple", "acme", stem="Assets"),
-        Artifact("css", "acme/assets"),
+        Artifact("android", "dist/acme/android"),
+        Artifact("apple", "dist/acme/apple"),
+        Artifact("css", "dist/acme/css"),
     ],
 )
 ```
