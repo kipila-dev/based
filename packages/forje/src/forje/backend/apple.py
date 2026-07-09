@@ -7,6 +7,7 @@ from resforge.io import MemorySink
 
 from forje.backend import Backend
 from forje.ir import ArtifactNode, ColorNode, TargetNode, TokenMapping
+from forje.ir.utils import get_config
 
 _APPEARANCE_MAP: dict[TokenMapping, list[Appearance]] = {
     "light": [],
@@ -41,7 +42,7 @@ class Apple(Backend):
 
         with AssetCatalog(
             artifact.path,
-            artifact.stem or "Assets",
+            get_config(artifact.config, "stem", "Assets"),
             sink=sink,
         ) as catalog:
             for token in color_tokens:

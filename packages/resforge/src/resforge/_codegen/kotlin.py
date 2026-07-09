@@ -52,6 +52,11 @@ class KotlinFile:
     """A Kotlin file declaration."""
 
     def __init__(self, package: str) -> None:
+        package = package.strip()
+        if not package:
+            msg = "Package must not be empty"
+            raise ValueError(msg)
+
         self._package = package
         self._imports: set[str] = set()
         self._members: list[KotlinProperty | KotlinObject] = []
