@@ -129,3 +129,8 @@ def test_unsupported_dimension_unit_raises(tmp_path: Path):
         ComposeWriter(output, package="com.example.theme") as compose,
     ):
         compose.dimension(padding=Dimension(8, "px"))
+
+
+def test_empty_package_raises():
+    with pytest.raises(ValueError, match="Package"):
+        ComposeWriter("Color.kt", package="")

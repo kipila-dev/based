@@ -46,7 +46,7 @@ class ArtifactNode:
 
     platform: str
     path: str
-    stem: str | None = None
+    config: dict[str, object] = Field(default_factory=dict)
 
 
 @dataclass

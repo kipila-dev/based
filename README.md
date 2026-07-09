@@ -16,6 +16,11 @@ target(
     artifacts=[
         Artifact("android", "dist/acme/android"),
         Artifact("apple", "dist/acme/apple"),
+        Artifact(
+            "compose",
+            "dist/acme/compose",
+            package="com.acme.android.design"
+        ),
         Artifact("css", "dist/acme/css"),
     ],
 )

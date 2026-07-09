@@ -7,6 +7,7 @@ from resforge.io import MemorySink
 
 from forje.backend import Backend
 from forje.ir import ArtifactNode, ColorNode, TargetNode, TokenMapping
+from forje.ir.utils import get_config
 
 __all__ = ["CSS"]
 
@@ -22,12 +23,7 @@ _QUERIES: dict[TokenMapping, str | None] = {
 
 
 def _to_color(node: ColorNode) -> Color:
-    return Color(
-        x=node.coords[0],
-        y=node.coords[1],
-        z=node.coords[2],
-        alpha=node.alpha,
-    )
+    return Color(x=node.coords[0], y=node.coords[1], z=node.coords[2], alpha=node.alpha)
 
 
 def _to_css_vars(name: str, node: ColorNode) -> tuple[str, str]:
@@ -87,10 +83,12 @@ class CSS(Backend):
         ]
 
         css = "\n\n".join(blocks) + "\n"
-
+        stem = get_config(artifact.config, "stem", "tokens")
         sink = MemorySink()
+
         sink.write(
-            Path(artifact.path) / f"{artifact.stem or 'tokens'}.css",
+            Path(artifact.path) / f"{stem}.css",
             css.encode(),
         )
+
         return sink.files

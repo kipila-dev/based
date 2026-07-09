@@ -8,6 +8,7 @@ from resforge.io import MemorySink, WriteSink
 from forje.backend import Backend
 from forje.ir import ArtifactNode, TargetNode, TokenMapping
 from forje.ir.models import ColorNode
+from forje.ir.utils import get_config
 
 
 def _to_color(node: ColorNode) -> Color:
@@ -41,7 +42,7 @@ class Android(Backend):
 
         sink = MemorySink()
         base_path = Path(artifact.path)
-        stem = artifact.stem or "colors"
+        stem = get_config(artifact.config, "stem", "colors")
 
         _write_tokens(sink, base_path / "values" / f"{stem}.xml", light)
         _write_tokens(sink, base_path / "values-night" / f"{stem}.xml", dark)

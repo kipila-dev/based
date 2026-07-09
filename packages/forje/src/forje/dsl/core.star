@@ -32,7 +32,7 @@ TokenType = record(
 ArtifactType = record(
     platform=str,
     path=str,
-    stem=field(str | None, default=None),
+    config=field(dict[str, typing.Any] | None, default=None),
 )
 
 
@@ -122,5 +122,5 @@ def Token(
     fail("Token must have a value")
 
 
-def Artifact(platform: str, path: str, *, stem=None) -> ArtifactType:
-    return ArtifactType(platform=platform, path=path, stem=stem)
+def Artifact(platform: str, path: str, **config: dict) -> ArtifactType:
+    return ArtifactType(platform=platform, path=path, config=config)

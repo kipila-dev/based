@@ -128,6 +128,11 @@ class ComposeWriter(_BaseComposeScope):
             sink: The custom output to write data to. If None,
                 defaults to a standard file write.
         """
+        package = package.strip()
+        if not package:
+            msg = "Package must not be empty"
+            raise ValueError(msg)
+
         self._active = False
         self._path = Path(path)
         self._package = package

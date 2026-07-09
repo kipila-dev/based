@@ -1,3 +1,4 @@
+import pytest
 from resforge._codegen.kotlin import KotlinFile, KotlinObject, KotlinProperty
 
 
@@ -102,3 +103,8 @@ def test_top_level_property():
     assert f.render() == (
         "package com.example\n\nval primary: Color = Color(0xFF6200EE)\n"
     )
+
+
+def test_empty_package_raises():
+    with pytest.raises(ValueError, match="Package"):
+        KotlinFile(package="")
