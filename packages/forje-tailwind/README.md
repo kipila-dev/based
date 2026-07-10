@@ -4,7 +4,7 @@ Tailwind CSS color palette plugin for Forje.
 
 ## Installation
 
-```sh
+```bash
 pip install forje-tailwind
 ```
 

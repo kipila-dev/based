@@ -14,7 +14,7 @@ design tokens.
 
 ## Installation
 
-```sh
+```bash
 pip install resforge
 ```
 

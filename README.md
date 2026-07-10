@@ -28,7 +28,7 @@ target(
 
 ## Installation
 
-```sh
+```bash
 pip install forje
 ```
 
@@ -38,7 +38,7 @@ Requires Python 3.12+.
 
 Create a `build.forje` in your project root and run:
 
-```sh
+```bash
 forje build
 ```
 
