@@ -1,10 +1,13 @@
 # Forje
 
-**A build system for your design system.**
+**A compiler pipeline for design systems.**
 
-Define your design tokens once, compile to native artifacts automatically. Build
-scripts are written in [Starlark](https://bazel.build/rules/language), the same
-language used by Bazel and Buck2.
+Design tokens are source code. Forje treats your design system as a compilable
+program instead of a collection of transformation scripts. It parses build
+definitions into an intermediate representation, executes validation and
+transformation passes, and emits platform-specific artifacts. Build definitions
+are written in [Starlark](https://bazel.build/rules/language), the same language
+used by Bazel and Buck2.
 
 ```starlark
 primary = Token("primary", Color("#38BDF8"))
