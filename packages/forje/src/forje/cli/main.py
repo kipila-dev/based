@@ -1,4 +1,3 @@
-import logging
 import time
 from collections.abc import Generator
 from pathlib import Path
@@ -7,7 +6,6 @@ from typing import TYPE_CHECKING, Annotated
 import typer
 from resforge.io import atomic_write
 from rich import print  # noqa: A004
-from rich.logging import RichHandler
 
 from forje import __version__
 from forje.cli.ui import error, success
@@ -22,13 +20,6 @@ from forje.passes.validation import PlatformSupport, TargetFilter, TargetValidat
 
 if TYPE_CHECKING:
     from forje.core.pass_ import Pass
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(message)s",
-    datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True)],
-)
 
 app = typer.Typer(
     name="forje",
