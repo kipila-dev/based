@@ -9,8 +9,13 @@ transformation passes, and emits platform-specific artifacts. Build definitions
 are written in [Starlark](https://bazel.build/rules/language), the same language
 used by Bazel and Buck2.
 
+Colors are stored in a device-independent representation and converted to each
+target color space during compilation. Wide-gamut colors are preserved for
+targets that support them and clipped when converted to narrower gamuts such as
+sRGB.
+
 ```starlark
-primary = Token("primary", Color("#38BDF8"))
+primary = Token("primary", Color(0.78, 0.30, 225, space=ColorSpace.OKLCH))
 surface = Token("surface", dark=Color("#0F172A"), light=Color("#FFFFFF"))
 
 target(
