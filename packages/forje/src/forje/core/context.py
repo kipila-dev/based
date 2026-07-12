@@ -3,7 +3,7 @@ from __future__ import annotations
 from contextvars import ContextVar, Token
 from dataclasses import dataclass, field
 from threading import RLock
-from typing import TYPE_CHECKING, final, override
+from typing import TYPE_CHECKING, cast, final, override
 
 if TYPE_CHECKING:
     from forje.ir import IR
@@ -25,7 +25,7 @@ class Context:
 class _ContextProxy:
     def __getattr__(self, name: str) -> object:
         try:
-            return getattr(_ctx.get(), name)  # pyright: ignore[reportAny]
+            return cast("object", getattr(_ctx.get(), name))
         except LookupError as e:
             msg = "No build context active."
             raise RuntimeError(msg) from e

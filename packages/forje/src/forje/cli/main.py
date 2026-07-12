@@ -16,6 +16,7 @@ from forje.core.errors import ForjeError
 from forje.core.loader import load_plugins
 from forje.passes.codegen import Codegen
 from forje.passes.color_norm import ColorCanonicalizer
+from forje.passes.resolution import ContextResolution
 from forje.passes.validation import PlatformSupport, TargetFilter, TargetValidation
 
 if TYPE_CHECKING:
@@ -83,6 +84,7 @@ def build(
             TargetFilter(targets),
             TargetValidation(),
             PlatformSupport(env),
+            ContextResolution(env),
             ColorCanonicalizer(),
             *env.passes,
             Codegen(env),

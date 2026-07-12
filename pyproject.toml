@@ -12,7 +12,16 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D100", "D104", "D105", "D107", "E741", "ANN401", "PLR2004"]
+ignore = [
+  "ANN401",
+  "D100",
+  "D104",
+  "D105",
+  "D107",
+  "E741",
+  "PLR0911",
+  "PLR2004",
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import TypeAdapter
+from pydantic import ConfigDict, TypeAdapter
 from pydantic.dataclasses import dataclass
 
 from forje.ir import TokenNode
@@ -11,9 +11,9 @@ Role = Literal["text", "large_text", "non_text"]
 Level = Literal["aa", "aaa"]
 
 
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid"))
 class AgainstNode:
-    """A WCAG contrast requirement linking a foreground token to a background."""
+    """A WCAG contrast requirement that links foreground token to a background token."""
 
     token: TokenNode
     role: Role = "text"

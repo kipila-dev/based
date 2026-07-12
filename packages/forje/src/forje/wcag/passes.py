@@ -2,13 +2,11 @@ from collections.abc import Generator
 from typing import final, override
 
 import coloraide
-from pydantic import ValidationError
 
 from forje.core.errors import ForjeValidationError
 from forje.core.pass_ import Pass
 from forje.ir import IR, ColorNode, TargetNode, TokenMapping, TokenNode
-from forje.passes.color_norm import normalize_token_node
-from forje.wcag.models import AgainstNode, Level, Role, against_adapter
+from forje.wcag.models import AgainstNode, Level, Role
 
 _WCAG_THRESHOLDS: dict[tuple[Role, Level], float] = {
     ("text", "aa"): 4.5,
@@ -20,25 +18,12 @@ _WCAG_THRESHOLDS: dict[tuple[Role, Level], float] = {
 }
 
 
-def _resolve_wcag_nodes(context: list[object]) -> Generator[AgainstNode]:
-    for node in context:
-        if isinstance(node, AgainstNode):
-            yield node
-            continue
-        try:
-            against_node = against_adapter.validate_python(node)
-            against_node.token = normalize_token_node(against_node.token)
-            yield against_node
-        except ValidationError:
-            continue
-
-
 def _walk_wcag_tokens(
     ir: IR,
 ) -> Generator[tuple[TargetNode, TokenNode, list[AgainstNode]]]:
     for target in ir.targets.values():
         for token in target.tokens.values():
-            wcag_nodes = list(_resolve_wcag_nodes(token.context))
+            wcag_nodes = [n for n in token.context if isinstance(n, AgainstNode)]
             if wcag_nodes:
                 yield target, token, wcag_nodes
 
@@ -83,7 +68,7 @@ def _validate_contrast(
             msg = (
                 f"{target.id}: WCAG {against.level.upper()} contrast failure "
                 f"({against.role}, {variant}): "
-                f"'{token.name}' vs '{against.token.name}' "
+                f"'{token.name}' against '{against.token.name}' "
                 f"is {contrast_ratio:.2f}:1, requires ≥ {required_contrast:.1f}:1"
             )
             errors.append(ForjeValidationError(msg))
@@ -93,7 +78,7 @@ def _validate_contrast(
 
 @final
 class WCAGValidation(Pass):
-    """Validates WCAG contrast ratios for tokens with declared context constraints."""
+    """Validates contrast ratios for tokens with WCAG constraints in `context`."""
 
     @override
     def run(self, ir: IR) -> None:

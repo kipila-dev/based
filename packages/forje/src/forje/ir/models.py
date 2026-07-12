@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import Field
+from pydantic import ConfigDict, Field, TypeAdapter
 from pydantic.dataclasses import dataclass
 
 __all__ = [
@@ -13,15 +13,18 @@ __all__ = [
     "TargetNode",
     "TokenMapping",
     "TokenNode",
+    "artifact_adapter",
+    "color_adapter",
+    "target_adapter",
+    "token_adapter",
 ]
-
 
 ColorSpace = Literal["oklch", "p3", "srgb", "xyz-d65"]
 TokenKind = Literal["color"]
 TokenMapping = Literal["dark", "light", "high_contrast_dark", "high_contrast_light"]
 
 
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid"))
 class ColorNode:
     """A color value in a specific color space."""
 
@@ -30,7 +33,7 @@ class ColorNode:
     space: ColorSpace = "srgb"
 
 
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid"))
 class TokenNode:
     """A named design token with one or more appearance-mapped colors."""
 
@@ -40,7 +43,7 @@ class TokenNode:
     mapping: dict[TokenMapping, ColorNode] = Field(default_factory=dict)
 
 
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid"))
 class ArtifactNode:
     """Output configuration for a single platform."""
 
@@ -49,7 +52,7 @@ class ArtifactNode:
     config: dict[str, object] = Field(default_factory=dict)
 
 
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid"))
 class TargetNode:
     """A named build target grouping tokens and artifact configs."""
 
@@ -64,3 +67,9 @@ class IR:
 
     targets: dict[str, TargetNode] = Field(default_factory=dict)
     outputs: dict[str, dict[str, dict[str, bytes]]] = Field(default_factory=dict)
+
+
+color_adapter = TypeAdapter(ColorNode)
+token_adapter = TypeAdapter(TokenNode)
+artifact_adapter = TypeAdapter(ArtifactNode)
+target_adapter = TypeAdapter(TargetNode)

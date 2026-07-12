@@ -78,14 +78,17 @@ compile step, Forje will raise a validation error.
 
 ## Extending Forje
 
-Plugins expose new DSL functions, compiler passes and backends via Python entry
-points. For a reference plugin implementation, see the built-in `forje.wcag`
-module.
+Plugin interface is exposed via Python entry points. For a reference plugin
+implementation, see the built-in `forje.wcag` module.
 
 ```toml
 # DSL extension
 [project.entry-points."forje.dsl"]
 myplugin = "myplugin.dsl:myplugin_module"
+
+# Context adapter
+[project.entry-points."forje.context_adapter"]
+mynode = "myplugin.models:mynode_adapter"
 
 # Compiler pass
 [project.entry-points."forje.pass"]
