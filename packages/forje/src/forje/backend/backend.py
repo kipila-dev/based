@@ -7,7 +7,7 @@ __all__ = ["Backend"]
 
 @runtime_checkable
 class Backend(Protocol):
-    """Interface for platform-specific code generators."""
+    """Protocol for platform-specific code generators."""
 
     def codegen(
         self,
