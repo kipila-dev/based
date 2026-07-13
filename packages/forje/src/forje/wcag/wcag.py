@@ -4,9 +4,11 @@ from typing import final, override
 import coloraide
 
 from forje.core.errors import ForjeValidationError
-from forje.core.pass_ import Pass
+from forje.core.pas import Pass
 from forje.ir import IR, ColorNode, TargetNode, TokenMapping, TokenNode
 from forje.wcag.models import AgainstNode, Level, Role
+
+__all__ = ["WCAGValidation"]
 
 _WCAG_THRESHOLDS: dict[tuple[Role, Level], float] = {
     ("text", "aa"): 4.5,

@@ -6,7 +6,7 @@ from forje.core.frontend import evaluate
 
 if TYPE_CHECKING:
     from forje.core.environment import Environment
-    from forje.core.pass_ import Pass
+    from forje.core.pas import Pass
 
 __all__ = ["Driver"]
 
@@ -21,20 +21,20 @@ class Driver:
     def build(
         self,
         source: str,
-        pipeline: list[Pass] | None = None,
+        pipeline: list[Pass],
     ) -> dict[str, dict[str, dict[str, bytes]]]:
         """Evaluates the build script and runs the pass pipeline.
 
         Args:
             source: Contents of a build.forje file.
-            pipeline: Ordered list of passes to execute. Defaults to empty.
+            pipeline: Ordered list of passes to execute.
 
         Returns:
             Nested dict keyed by target id -> platform -> file path -> bytes.
         """
         ir = evaluate(self._env, source)
 
-        for pass_ in pipeline or []:
-            pass_.run(ir)
+        for pas in pipeline:
+            pas.run(ir)
 
         return ir.outputs

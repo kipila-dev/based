@@ -5,7 +5,7 @@ from typing import cast, final, override
 
 import coloraide
 
-from forje.core.pass_ import Pass
+from forje.core.pas import Pass
 from forje.ir import IR
 from forje.ir.models import ColorNode
 

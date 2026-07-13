@@ -22,7 +22,7 @@ forje = "forje.cli.main:app"
 [project.entry-points."forje.dsl"]
 core = "forje.dsl.core:module"
 stdlib = "forje.dsl.stdlib:module"
-wcag = "forje.wcag.dsl:module"
+wcag = "forje.wcag:module"
 
 [project.entry-points."forje.context_adapter"]
 against = "forje.wcag.models:against_adapter"
@@ -32,7 +32,7 @@ target = "forje.ir:target_adapter"
 token = "forje.ir:token_adapter"
 
 [project.entry-points."forje.pass"]
-wcag = "forje.wcag.passes:WCAGValidation"
+wcag = "forje.wcag:WCAGValidation"
 
 [project.entry-points."forje.backend"]
 android = "forje.backend.android:Android"

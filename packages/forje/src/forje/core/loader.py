@@ -5,7 +5,7 @@ from pydantic import TypeAdapter
 
 from forje.backend import Backend
 from forje.core.errors import ForjePluginLoadError
-from forje.core.pass_ import Pass
+from forje.core.pas import Pass
 from forje.dsl import Module
 
 if TYPE_CHECKING:

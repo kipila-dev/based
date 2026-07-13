@@ -20,7 +20,7 @@ from forje.passes.resolution import ContextResolution
 from forje.passes.validation import PlatformSupport, TargetFilter, TargetValidation
 
 if TYPE_CHECKING:
-    from forje.core.pass_ import Pass
+    from forje.core.pas import Pass
 
 app = typer.Typer(
     name="forje",

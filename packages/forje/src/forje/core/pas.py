@@ -1,9 +1,8 @@
-__all__ = ["Pass"]
-
-
 from abc import ABC, abstractmethod
 
 from forje.ir import IR
+
+__all__ = ["Pass"]
 
 
 class Pass(ABC):
