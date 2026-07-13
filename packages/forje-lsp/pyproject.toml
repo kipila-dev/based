@@ -3,24 +3,24 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "forje-tailwind"
+name = "forje-lsp"
 dynamic = ["version"]
-description = "Tailwind CSS color palette plugin for Forje"
+description = "Forje Language Server Protocol"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "Kipila Ltd", email = "hello@kipila.dev" }]
-dependencies = ["forje"]
+dependencies = ["forje", "pygls"]
 
 [project.urls]
 Homepage = "https://kipila.dev"
 Repository = "https://github.com/kipila-dev/forje"
 
-[tool.hatch.version]
-path = "src/forje_tailwind/__init__.py"
+[project.scripts]
+forje-lsp = "forje_lsp.server:main"
 
-[project.entry-points."forje.dsl"]
-tailwind = "forje_tailwind:module"
+[tool.hatch.version]
+path = "src/forje_lsp/__init__.py"
 
 [tool.uv.sources]
 forje = { workspace = true }

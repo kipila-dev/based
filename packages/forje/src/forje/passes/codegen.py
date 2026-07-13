@@ -1,7 +1,7 @@
 from typing import final, override
 
 from forje.core.environment import Environment
-from forje.core.pass_ import Pass
+from forje.core.pas import Pass
 from forje.ir import IR
 
 
