@@ -14,10 +14,10 @@ from forje.core.driver import Driver
 from forje.core.environment import Environment
 from forje.core.errors import ForjeError
 from forje.core.loader import load_plugins
-from forje.passes.codegen import Codegen
-from forje.passes.color_norm import ColorCanonicalizer
-from forje.passes.resolution import ContextResolution
-from forje.passes.validation import PlatformSupport, TargetFilter, TargetValidation
+from forje.pas.codegen import Codegen
+from forje.pas.color_norm import ColorCanonicalizer
+from forje.pas.resolution import ContextResolution
+from forje.pas.validation import PlatformSupport, TargetFilter, TargetValidation
 
 if TYPE_CHECKING:
     from forje.core.pas import Pass
