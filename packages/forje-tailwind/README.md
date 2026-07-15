@@ -27,7 +27,3 @@ target(
 
 For the full list of available colors, see the
 [Tailwind CSS documentation](https://tailwindcss.com/docs/colors).
-
-## License
-
-MIT
