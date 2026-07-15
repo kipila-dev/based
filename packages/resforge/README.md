@@ -152,7 +152,3 @@ with AssetCatalog("App", "Assets") as catalog:
 - SwiftUI dimensions
 - Typography
 - Images (ImageSet, IconSet, `res/drawable` vectors)
-
-## License
-
-MIT
