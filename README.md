@@ -15,7 +15,7 @@ targets that support them and clipped when converted to narrower gamuts such as
 sRGB.
 
 ```starlark
-primary = Token("primary", Color(0.78, 0.30, 225, space=ColorSpace.OKLCH))
+primary = Token("primary", color.oklch(0.78, 0.30, 225))
 surface = Token("surface", dark=Color("#0F172A"), light=Color("#FFFFFF"))
 
 target(
