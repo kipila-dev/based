@@ -23,7 +23,7 @@ class Module:
         Args:
             name: Starlark module name. If omitted, the exported definitions
                 will be injected into the default Starlark module.
-            priority: Module load priority, lower values are loaded earlier.
+            priority: Module load priority. Lower values are loaded earlier.
         """
         self.name = name
         self.priority = priority

@@ -6,18 +6,12 @@ from resforge.android import ValuesWriter
 from resforge.io import MemorySink, WriteSink
 
 from forje.backend import Backend
-from forje.ir import ArtifactNode, TargetNode, TokenMapping
-from forje.ir.models import ColorNode
+from forje.ir import ArtifactNode, ColorNode, ColorSelector, TargetNode
 from forje.ir.utils import get_config
 
 
 def _to_color(node: ColorNode) -> Color:
-    return Color(
-        x=node.coords[0],
-        y=node.coords[1],
-        z=node.coords[2],
-        alpha=node.alpha,
-    )
+    return Color(x=node.coords[0], y=node.coords[1], z=node.coords[2], alpha=node.alpha)
 
 
 def _write_tokens(sink: WriteSink, path: Path, nodes: dict[str, ColorNode]) -> None:
@@ -34,11 +28,13 @@ class Android(Backend):
     def codegen(self, target: TargetNode, artifact: ArtifactNode) -> dict[str, bytes]:
         colors = [t for t in target.tokens.values() if t.kind == "color"]
 
-        def get_mapping(mode: TokenMapping) -> dict[str, ColorNode]:
-            return {t.name: t.mapping[mode] for t in colors if mode in t.mapping}
+        def get_variant(selector: ColorSelector) -> dict[str, ColorNode]:
+            return {
+                t.name: t.variants[selector] for t in colors if selector in t.variants
+            }
 
-        light = get_mapping("light")
-        dark = get_mapping("dark")
+        light = get_variant("light")
+        dark = get_variant("dark")
 
         sink = MemorySink()
         base_path = Path(artifact.path)

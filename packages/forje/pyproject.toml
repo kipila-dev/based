@@ -20,7 +20,9 @@ Repository = "https://github.com/kipila-dev/forje"
 forje = "forje.cli.main:app"
 
 [project.entry-points."forje.dsl"]
-core = "forje.dsl.core:module"
+color = "forje.dsl.color:module"
+default = "forje.dsl.default:module"
+dimen = "forje.dsl.dimen:module"
 stdlib = "forje.dsl.stdlib:module"
 wcag = "forje.wcag:module"
 
@@ -28,6 +30,7 @@ wcag = "forje.wcag:module"
 against = "forje.wcag.models:against_adapter"
 artifact = "forje.ir:artifact_adapter"
 color = "forje.ir:color_adapter"
+dimen = "forje.ir:dimen_adapter"
 target = "forje.ir:target_adapter"
 token = "forje.ir:token_adapter"
 

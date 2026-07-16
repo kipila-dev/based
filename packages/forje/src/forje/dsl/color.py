@@ -4,9 +4,9 @@ from forje.dsl import Module
 
 __all__ = ["module"]
 
-module = Module(name="core", priority=-1000).export_starlark(
+module = Module(name="color", priority=-1000).export_starlark(
     package=__name__,
-    resource_name="core.star",
+    resource_name="color.star",
 )
 
 _hex_color_re = re.compile(r"#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})")

@@ -1,19 +1,21 @@
-from pydantic import TypeAdapter
-
 from forje.core.context import Context
 from forje.core.errors import ForjeValidationError
 from forje.dsl import Module
-from forje.ir import ArtifactNode, TargetNode, TokenNode
+from forje.ir import TargetNode, artifact_adapter, token_adapter
 
 __all__ = ["module"]
 
-module = Module(name=None).export_starlark(
-    package=__name__,
-    resource_name="stdlib.star",
+module = (
+    Module(name="stdlib", priority=-999)
+    .export_starlark(
+        package=__name__,
+        resource_name="token.star",
+    )
+    .export_starlark(
+        package=__name__,
+        resource_name="stdlib.star",
+    )
 )
-
-_token_adapter = TypeAdapter(TokenNode)
-_artifact_adapter = TypeAdapter(ArtifactNode)
 
 
 @module.export(name="_sys_create_target")
@@ -32,7 +34,7 @@ def target_add_token(
     target_id: str,
     token: dict[str, object],
 ) -> None:
-    parsed = _token_adapter.validate_python(token)
+    parsed = token_adapter.validate_python(token)
     with ctx.lock:
         try:
             target = ctx.ir.targets[target_id]
@@ -48,7 +50,7 @@ def target_add_artifact(
     target_id: str,
     artifact: dict[str, object],
 ) -> None:
-    parsed = _artifact_adapter.validate_python(artifact)
+    parsed = artifact_adapter.validate_python(artifact)
     with ctx.lock:
         try:
             target = ctx.ir.targets[target_id]

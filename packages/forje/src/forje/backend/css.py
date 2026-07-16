@@ -6,7 +6,7 @@ from resforge import Color
 from resforge.io import MemorySink
 
 from forje.backend import Backend
-from forje.ir import ArtifactNode, ColorNode, TargetNode, TokenMapping
+from forje.ir import ArtifactNode, ColorNode, ColorSelector, TargetNode
 from forje.ir.utils import get_config
 
 __all__ = ["CSS"]
@@ -14,7 +14,7 @@ __all__ = ["CSS"]
 _QUERY_CONTRAST = "(prefers-contrast: more)"
 _QUERY_LIGHT = "(prefers-color-scheme: light)"
 _QUERY_DARK = "(prefers-color-scheme: dark)"
-_QUERIES: dict[TokenMapping, str | None] = {
+_QUERIES: dict[ColorSelector, str | None] = {
     "light": None,
     "dark": f"@media {_QUERY_DARK}",
     "high_contrast_light": f"@media {_QUERY_CONTRAST} and {_QUERY_LIGHT}",
@@ -65,7 +65,7 @@ class CSS(Backend):
 
     @override
     def codegen(self, target: TargetNode, artifact: ArtifactNode) -> dict[str, bytes]:
-        vars_: dict[TokenMapping, list[str]] = {
+        vars_: dict[ColorSelector, list[str]] = {
             "light": [],
             "dark": [],
             "high_contrast_light": [],
@@ -75,7 +75,7 @@ class CSS(Backend):
         color_tokens = (t for t in target.tokens.values() if t.kind == "color")
 
         for token in color_tokens:
-            for mode, node in token.mapping.items():
+            for mode, node in token.variants.items():
                 vars_[mode].extend(v for v in _to_css_vars(token.name, node))
 
         blocks: list[str] = [
