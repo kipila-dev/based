@@ -11,11 +11,12 @@ from forje.ir.utils import get_config
 
 __all__ = ["CSS"]
 
+_SUPPORTS_OKLCH = "@supports (color: oklch(0% 0 0))"
 _QUERY_CONTRAST = "(prefers-contrast: more)"
 _QUERY_LIGHT = "(prefers-color-scheme: light)"
 _QUERY_DARK = "(prefers-color-scheme: dark)"
-_QUERIES: dict[ColorSelector, str | None] = {
-    "light": None,
+_QUERIES: dict[ColorSelector, str] = {
+    "light": "",
     "dark": f"@media {_QUERY_DARK}",
     "high_contrast_light": f"@media {_QUERY_CONTRAST} and {_QUERY_LIGHT}",
     "high_contrast_dark": f"@media {_QUERY_CONTRAST} and {_QUERY_DARK}",
@@ -31,9 +32,7 @@ def _to_css_vars(name: str, node: ColorNode) -> tuple[str, str]:
     color = _to_color(node)
 
     r, g, b, a_srgb = color.to_srgb_components()
-    r = round(r * 255)
-    g = round(g * 255)
-    b = round(b * 255)
+    r, g, b = round(r * 255), round(g * 255), round(b * 255)
 
     l, c, h, a_oklch = color.to_oklch_components()
     h = "none" if math.isnan(h) else round(h, 3)
@@ -44,19 +43,26 @@ def _to_css_vars(name: str, node: ColorNode) -> tuple[str, str]:
     )
 
 
-def _add_indent(lines: list[str], level: int = 1) -> list[str]:
-    return [f"{'  ' * level}{l}" for l in lines]
+def _indent(text: str | list[str], level: int = 1) -> str:
+    if isinstance(text, str):
+        text = text.split("\n")
+    prefix = "  " * level
+    return "\n".join(f"{prefix}{line}" if line else "" for line in text)
 
 
-def _to_css_block(vars_: list[str], query: str | None = None) -> str:
-    query = (query or "").strip()
+def _wrap(body: str, *rules: str) -> str:
+    for rule in filter(None, rules):
+        body = f"{rule} {{\n{_indent(body)}\n}}"
+    return body
 
-    block = [":root {", *_add_indent(vars_), "}"]
 
-    if query:
-        block = [f"{query} {{", *_add_indent(block), "}"]
-
-    return "\n".join(block)
+def _render(selector_to_var: dict[ColorSelector, list[str]]) -> str:
+    blocks = [
+        _wrap(f":root {{\n{_indent(var)}\n}}", _QUERIES[selector])
+        for selector, var in selector_to_var.items()
+        if var
+    ]
+    return "\n\n".join(blocks)
 
 
 @final
@@ -65,30 +71,23 @@ class CSS(Backend):
 
     @override
     def codegen(self, target: TargetNode, artifact: ArtifactNode) -> dict[str, bytes]:
-        vars_: dict[ColorSelector, list[str]] = {
-            "light": [],
-            "dark": [],
-            "high_contrast_light": [],
-            "high_contrast_dark": [],
-        }
+        rgb: dict[ColorSelector, list[str]] = {s: [] for s in _QUERIES}
+        oklch: dict[ColorSelector, list[str]] = {s: [] for s in _QUERIES}
 
-        color_tokens = (t for t in target.tokens.values() if t.kind == "color")
-
+        color_tokens = [t for t in target.tokens.values() if t.kind == "color"]
         for token in color_tokens:
-            for mode, node in token.variants.items():
-                vars_[mode].extend(v for v in _to_css_vars(token.name, node))
+            for selector, node in token.variants.items():
+                rgb_var, oklch_var = _to_css_vars(token.name, node)
+                rgb[selector].append(rgb_var)
+                oklch[selector].append(oklch_var)
 
-        blocks: list[str] = [
-            _to_css_block(v, _QUERIES[m]) for m, v in vars_.items() if v
-        ]
+        sections = [_render(rgb)]
+        if oklch_section := _render(oklch):
+            sections.append(_wrap(oklch_section, _SUPPORTS_OKLCH))
 
-        css = "\n\n".join(blocks) + "\n"
+        css = "\n\n".join(sections) + "\n"
+
         stem = get_config(artifact.config, "stem", "tokens")
         sink = MemorySink()
-
-        sink.write(
-            Path(artifact.path) / f"{stem}.css",
-            css.encode(),
-        )
-
+        sink.write(Path(artifact.path) / f"{stem}.css", css.encode())
         return sink.files
