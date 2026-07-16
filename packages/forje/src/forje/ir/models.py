@@ -65,7 +65,7 @@ class TokenNode[T: ValueNode, K: TokenKind, S: AnySelector]:
     name: str
     kind: K
     variants: dict[S, T]
-    context: list[object] = Field(default_factory=list)
+    annotations: list[object] = Field(default_factory=list)
 
 
 @dataclass(config=ConfigDict(extra="forbid"))

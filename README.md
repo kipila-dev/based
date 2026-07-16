@@ -63,7 +63,7 @@ primary = Token("primary", Color("#0284C7"))
 text = Token(
     "text",
     Color("#1E293B"),
-    context=wcag.against(surface, role=wcag.Role.Text, level=wcag.Level.AA)
+    annotations=wcag.against(surface, role=wcag.Role.Text, level=wcag.Level.AA)
 )
 
 target(
@@ -86,8 +86,8 @@ implementation, see the built-in `forje.wcag` module.
 [project.entry-points."forje.dsl"]
 myplugin = "myplugin.dsl:myplugin_module"
 
-# Context adapter
-[project.entry-points."forje.context_adapter"]
+# Annotations adapter
+[project.entry-points."forje.annotations_adapter"]
 mynode = "myplugin.models:mynode_adapter"
 
 # Compiler pass

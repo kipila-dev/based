@@ -27,7 +27,7 @@ def against(
         name=token.name,
         kind=token.kind,
         variants=token.variants,
-        context=[],
+        annotations=[],
     )
     return AgainstRecord(token=token, role=role, level=level)
 
