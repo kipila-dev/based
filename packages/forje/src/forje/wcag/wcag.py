@@ -26,7 +26,9 @@ def _walk_wcag_tokens(
     for target in ir.targets.values():
         for token in target.tokens.values():
             if token.kind == "color":
-                wcag_nodes = [n for n in token.context if isinstance(n, AgainstNode)]
+                wcag_nodes = [
+                    n for n in token.annotations if isinstance(n, AgainstNode)
+                ]
                 if wcag_nodes:
                     yield target, token, wcag_nodes
 
@@ -81,7 +83,7 @@ def _validate_contrast(
 
 @final
 class WCAGValidation(Pass):
-    """Validates contrast ratios for tokens with WCAG constraints in `context`."""
+    """Validates contrast ratios for tokens with WCAG constraints in `annotations`."""
 
     @override
     def run(self, ir: IR) -> None:

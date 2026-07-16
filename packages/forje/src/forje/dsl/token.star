@@ -14,61 +14,61 @@ TokenRecord = record(
     name=str,
     kind=_TokenKind,
     variants=dict[_AnySelector, _AnyValue],
-    context=list[typing.Any],
+    annotations=list[typing.Any],
 )
 
 
 def ColorToken(
     name: str,
     variants=dict[ColorSelector, ColorRecord],
-    context=list[typing.Any],
+    annotations=list[typing.Any],
 ) -> TokenRecord:
     return TokenRecord(
         name=name,
         kind=TokenKind.Color,
         variants=variants,
-        context=context,
+        annotations=annotations,
     )
 
 
 def DimensionToken(
     name: str,
     variants=dict[DimensionSelector, DimensionRecord],
-    context=list[typing.Any],
+    annotations=list[typing.Any],
 ) -> TokenRecord:
     return TokenRecord(
         name=name,
         kind=TokenKind.Dimension,
         variants=variants,
-        context=context,
+        annotations=annotations,
     )
 
 
 def Token(
     name: str,
     value: _AnyValue | None = None,
-    context: typing.Any | list[typing.Any] | None = None,
+    annotations: typing.Any | list[typing.Any] | None = None,
     **variants: dict[str, _AnyValue],
 ) -> TokenRecord:
-    if isinstance(context, list[typing.Any]):
-        context = context
-    elif context == None:
-        context = []
+    if isinstance(annotations, list[typing.Any]):
+        annotations = annotations
+    elif annotations == None:
+        annotations = []
     else:
-        context = [context]
+        annotations = [annotations]
 
     if isinstance(value, ColorRecord):
         return ColorToken(
             name=name,
             variants={ColorSelector("light"): value},
-            context=context,
+            annotations=annotations,
         )
 
     if isinstance(value, DimensionRecord):
         return DimensionToken(
             name=name,
             variants={DimensionSelector("default"): value},
-            context=context,
+            annotations=annotations,
         )
 
     if variants:
@@ -76,14 +76,14 @@ def Token(
             return ColorToken(
                 name=name,
                 variants={ColorSelector(k): v for k, v in variants.items()},
-                context=context,
+                annotations=annotations,
             )
 
         if isinstance(variants.values()[0], DimensionRecord):
             return DimensionToken(
                 name=name,
                 variants={DimensionSelector(k): v for k, v in variants.items()},
-                context=context,
+                annotations=annotations,
             )
 
     fail("Token must have a value")

@@ -20,6 +20,6 @@ class Environment:
     """
 
     modules: list[Module]
-    context_adapters: list[TypeAdapter[object]]
+    annotations_adapters: list[TypeAdapter[object]]
     passes: list[Pass]
     backends: dict[str, Backend]

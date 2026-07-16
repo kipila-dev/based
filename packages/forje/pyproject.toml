@@ -26,7 +26,7 @@ dimen = "forje.dsl.dimen:module"
 stdlib = "forje.dsl.stdlib:module"
 wcag = "forje.wcag:module"
 
-[project.entry-points."forje.context_adapter"]
+[project.entry-points."forje.annotations_adapter"]
 against = "forje.wcag.models:against_adapter"
 artifact = "forje.ir:artifact_adapter"
 color = "forje.ir:color_adapter"

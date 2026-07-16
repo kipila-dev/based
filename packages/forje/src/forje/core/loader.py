@@ -59,14 +59,14 @@ def load_plugins() -> tuple[
     modules.sort(key=lambda m: m.priority)
 
     adapters: list[tuple[str, TypeAdapter[object]]] = _load(
-        "forje.context_adapter",
+        "forje.annotations_adapter",
         TypeAdapter,
     )
-    context_adapters = [a for _, a in adapters]
+    annotations_adapters = [a for _, a in adapters]
 
     passes = [p for _, p in _load("forje.pass", Pass, instantiate=True)]
     passes.sort(key=lambda p: p.priority)
 
     backends = dict(_load("forje.backend", Backend, instantiate=True))
 
-    return modules, context_adapters, passes, backends
+    return modules, annotations_adapters, passes, backends

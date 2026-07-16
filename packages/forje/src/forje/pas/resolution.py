@@ -17,7 +17,7 @@ from forje.core.errors import ForjeError
 from forje.core.pas import Pass
 from forje.ir import IR
 
-__all__ = ["ContextResolution"]
+__all__ = ["AnnotationsResolver"]
 
 
 def _maybe_resolve_dict(obj: object, adapters: Sequence[TypeAdapter[object]]) -> object:
@@ -36,7 +36,7 @@ def _maybe_resolve_dict(obj: object, adapters: Sequence[TypeAdapter[object]]) ->
 
     if len(matches) > 1:
         names = ", ".join(type(m).__name__ for m in matches)
-        msg = f"Context entry matches multiple registered adapters: {names}"
+        msg = f"Annotations entry matches multiple registered adapters: {names}"
         raise ForjeError(msg)
 
     return matches[0]
@@ -82,12 +82,12 @@ def _resolve(
 
 
 @final
-class ContextResolution(Pass):
-    """Resolves raw dicts in `context` entries into typed objects."""
+class AnnotationsResolver(Pass):
+    """Resolves raw dicts in `annotations` entries into typed objects."""
 
     def __init__(self, env: Environment) -> None:
         self._env = env
 
     @override
     def run(self, ir: IR) -> None:
-        _resolve(ir, self._env.context_adapters, seen=set())
+        _resolve(ir, self._env.annotations_adapters, seen=set())
