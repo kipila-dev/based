@@ -54,11 +54,11 @@ def _oklch(
     h: int | float,
     alpha: float = 1.0,
 ) -> ColorRecord:
-    if not 0 <= l and l <= 1:
+    if not (0 <= l and l <= 1):
         fail("OKLCh lightness must be in [0.0, 1.0]")
     if c < 0:
         fail("OKLCh chroma must be non-negative")
-    if not 0 <= alpha and alpha <= 1:
+    if not (0 <= alpha and alpha <= 1):
         fail("Alpha must be in [0.0, 1.0]")
     return ColorRecord(coords=[l, c, h], alpha=alpha, space=ColorSpace.OKLCH)
 
