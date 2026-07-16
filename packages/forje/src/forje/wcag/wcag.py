@@ -5,7 +5,7 @@ import coloraide
 
 from forje.core.errors import ForjeValidationError
 from forje.core.pas import Pass
-from forje.ir import IR, ColorNode, TargetNode, TokenMapping, TokenNode
+from forje.ir import IR, ColorNode, ColorSelector, ColorToken, TargetNode
 from forje.wcag.models import AgainstNode, Level, Role
 
 __all__ = ["WCAGValidation"]
@@ -22,24 +22,25 @@ _WCAG_THRESHOLDS: dict[tuple[Role, Level], float] = {
 
 def _walk_wcag_tokens(
     ir: IR,
-) -> Generator[tuple[TargetNode, TokenNode, list[AgainstNode]]]:
+) -> Generator[tuple[TargetNode, ColorToken, list[AgainstNode]]]:
     for target in ir.targets.values():
         for token in target.tokens.values():
-            wcag_nodes = [n for n in token.context if isinstance(n, AgainstNode)]
-            if wcag_nodes:
-                yield target, token, wcag_nodes
+            if token.kind == "color":
+                wcag_nodes = [n for n in token.context if isinstance(n, AgainstNode)]
+                if wcag_nodes:
+                    yield target, token, wcag_nodes
 
 
 def _expand_mapping(
-    mapping: dict[TokenMapping, ColorNode],
-) -> dict[TokenMapping, ColorNode]:
-    light = mapping["light"]
-    dark = mapping.get("dark", light)
+    variants: dict[ColorSelector, ColorNode],
+) -> dict[ColorSelector, ColorNode]:
+    light = variants["light"]
+    dark = variants.get("dark", light)
     return {
         "light": light,
         "dark": dark,
-        "high_contrast_light": mapping.get("high_contrast_light", light),
-        "high_contrast_dark": mapping.get("high_contrast_dark", dark),
+        "high_contrast_light": variants.get("high_contrast_light", light),
+        "high_contrast_dark": variants.get("high_contrast_dark", dark),
     }
 
 
@@ -49,14 +50,14 @@ def _make_coloraide_color(node: ColorNode) -> coloraide.Color:
 
 def _validate_contrast(
     target: TargetNode,
-    token: TokenNode,
+    token: ColorToken,
     against: AgainstNode,
 ) -> list[ForjeValidationError]:
     errors: list[ForjeValidationError] = []
 
-    variants = token.mapping.keys() | against.token.mapping.keys()
-    token_expanded = _expand_mapping(token.mapping)
-    against_expanded = _expand_mapping(against.token.mapping)
+    variants = token.variants.keys() | against.token.variants.keys()
+    token_expanded = _expand_mapping(token.variants)
+    against_expanded = _expand_mapping(against.token.variants)
     token_mapping = {k: v for k, v in token_expanded.items() if k in variants}
     against_mapping = {k: v for k, v in against_expanded.items() if k in variants}
     required_contrast = _WCAG_THRESHOLDS[(against.role, against.level)]

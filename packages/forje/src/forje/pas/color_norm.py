@@ -16,13 +16,9 @@ def _normalize_color_node(node: ColorNode) -> None:
     if node.space == "xyz-d65":
         return
 
-    match node.space:
-        case "oklch" | "srgb":
-            space = node.space
-        case "p3":
-            space = "display-p3"
-
-    color = coloraide.Color(space, node.coords, alpha=node.alpha).convert("xyz-d65")
+    color = coloraide.Color(node.space, node.coords, alpha=node.alpha).convert(
+        "xyz-d65",
+    )
     coords = color.coords()
     node.coords = (coords[0], coords[1], coords[2])
     node.alpha = color.alpha()

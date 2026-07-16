@@ -1,4 +1,4 @@
-load("core", "TokenType")
+load("stdlib", "TokenRecord")
 
 _Role = enum("text", "large_text", "non_text")
 _Level = enum("aa", "aaa")
@@ -14,22 +14,22 @@ Level = struct(
     AAA=_Level("aaa"),
 )
 
-AgainstType = record(token=TokenType, role=_Role, level=_Level)
+AgainstRecord = record(token=TokenRecord, role=_Role, level=_Level)
 
 
 def against(
-    token: TokenType,
+    token: TokenRecord,
     *,
     role: _Role = Role.Text,
     level: _Level = Level.AA,
-) -> AgainstType:
-    token = TokenType(
+) -> AgainstRecord:
+    token = TokenRecord(
         name=token.name,
         kind=token.kind,
+        variants=token.variants,
         context=[],
-        mapping=token.mapping,
     )
-    return AgainstType(token=token, role=role, level=level)
+    return AgainstRecord(token=token, role=role, level=level)
 
 
 wcag = struct(

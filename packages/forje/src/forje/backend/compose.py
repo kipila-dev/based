@@ -7,7 +7,7 @@ from resforge.io import MemorySink
 
 from forje.backend import Backend
 from forje.core.errors import ForjeError
-from forje.ir import ArtifactNode, ColorNode, TargetNode, TokenMapping
+from forje.ir import ArtifactNode, ColorNode, ColorSelector, TargetNode
 from forje.ir.utils import get_config
 
 
@@ -36,11 +36,15 @@ class Compose(Backend):
         if not color_tokens:
             return sink.files
 
-        def get_mapping(mode: TokenMapping) -> dict[str, ColorNode]:
-            return {t.name: t.mapping[mode] for t in color_tokens if mode in t.mapping}
+        def get_variant(selector: ColorSelector) -> dict[str, ColorNode]:
+            return {
+                t.name: t.variants[selector]
+                for t in color_tokens
+                if selector in t.variants
+            }
 
-        light_colors = _to_resforge_colors(get_mapping("light"))
-        dark_colors = _to_resforge_colors(get_mapping("dark"))
+        light_colors = _to_resforge_colors(get_variant("light"))
+        dark_colors = _to_resforge_colors(get_variant("dark"))
 
         stem = get_config(artifact.config, "stem", "Theme")
         path = Path(artifact.path) / f"{stem}.kt"

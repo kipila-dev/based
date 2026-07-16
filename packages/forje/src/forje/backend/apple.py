@@ -6,10 +6,10 @@ from resforge.apple import Appearance, AppleColor, AssetCatalog
 from resforge.io import MemorySink
 
 from forje.backend import Backend
-from forje.ir import ArtifactNode, ColorNode, TargetNode, TokenMapping
+from forje.ir import ArtifactNode, ColorNode, ColorSelector, TargetNode
 from forje.ir.utils import get_config
 
-_APPEARANCE_MAP: dict[TokenMapping, list[Appearance]] = {
+_APPEARANCE_MAP: dict[ColorSelector, list[Appearance]] = {
     "light": [],
     "dark": [Appearance.Dark],
     "high_contrast_light": [Appearance.HighContrast, Appearance.Light],
@@ -23,12 +23,7 @@ def _to_pascal_case(value: str) -> str:
 
 
 def _to_color(node: ColorNode) -> Color:
-    return Color(
-        x=node.coords[0],
-        y=node.coords[1],
-        z=node.coords[2],
-        alpha=node.alpha,
-    )
+    return Color(x=node.coords[0], y=node.coords[1], z=node.coords[2], alpha=node.alpha)
 
 
 @final
@@ -49,7 +44,7 @@ class Apple(Backend):
                 name = _to_pascal_case(token.name)
                 apple_colors = [
                     AppleColor(_to_color(node), appearances=_APPEARANCE_MAP[mode])
-                    for mode, node in token.mapping.items()
+                    for mode, node in token.variants.items()
                 ]
                 catalog.colorset(name, *apple_colors)
 
