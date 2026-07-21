@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
 from forje.core.context import Context
 from forje.core.errors import ForjeValidationError
 from forje.dsl import Module

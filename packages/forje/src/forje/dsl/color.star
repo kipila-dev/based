@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
 _ColorSpace = enum("oklch", "display-p3", "srgb", "xyz-d65")
 ColorSpace = struct(
     OKLCH=_ColorSpace("oklch"),

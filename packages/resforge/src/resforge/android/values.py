@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
 import re
 import xml.etree.ElementTree as ET
 from io import BytesIO

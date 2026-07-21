@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
 _DimensionKind = enum("spacing", "size", "font")
 DimensionKind = struct(
     Spacing=_DimensionKind("spacing"),
