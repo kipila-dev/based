@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
 import dataclasses
 from collections.abc import Mapping, Sequence
 from collections.abc import Set as AbstractSet

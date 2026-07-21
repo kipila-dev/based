@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
 from collections.abc import Callable
 from functools import wraps
 from typing import Concatenate, Protocol, runtime_checkable
