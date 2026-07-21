@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
 name: CI
 on:
   push:
@@ -9,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup-python
+      - uses: ./.github/actions/setup-uv-and-sync
       - run: uv run ruff check .
       - run: uv run ruff format --check .
   typecheck:
@@ -17,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup-python
+      - uses: ./.github/actions/setup-uv-and-sync
       - run: uv run basedpyright
   test:
     needs: lint
@@ -28,7 +30,7 @@ jobs:
         python-version: ["3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup-python
+      - uses: ./.github/actions/setup-uv-and-sync
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run tests

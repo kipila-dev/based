@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.22
