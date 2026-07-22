@@ -9,29 +9,103 @@ transformation passes, and emits platform-specific artifacts. Build definitions
 are written in [Starlark](https://bazel.build/rules/language), the same language
 used by Bazel and Buck2.
 
-Colors are stored in a device-independent representation and converted to each
-target color space during compilation. Wide-gamut colors are preserved for
-targets that support them and clipped when converted to narrower gamuts such as
-sRGB.
+Values are stored in typed, device-independent representations and converted
+into target-specific forms during compilation. Colors preserve their source
+color space, with wide-gamut values retained for targets that support them and
+clipped when converted to narrower gamuts such as sRGB.
+
+Dimensions are typed by semantic kinds (`spacing`, `size`, `font`). This allows
+backends to choose appropriate units during generation while keeping the source
+definition independent of implementation details.
 
 ```starlark
-primary = Token("primary", color.oklch(0.78, 0.30, 225))
-surface = Token("surface", dark=Color("#0F172A"), light=Color("#FFFFFF"))
+colors = [
+    Token(
+        "primary",
+        light=color.Oklch(0.5, 0.134, 242.749),
+        dark=color.Oklch(0.828, 0.111, 230.318),
+    ),
+    Token(
+        "surface",
+        light=color.Oklch(0.97, 0, 0),
+        dark=color.Oklch(0.205, 0, 0),
+    ),
+]
+
+space = [
+    Token("space.s", dimen.Spacing(0.5)),
+    Token("space.m", dimen.Spacing(1)),
+    Token("space.l", dimen.Spacing(2)),
+    Token("space.xl", dimen.Spacing(4)),
+]
 
 target(
     id="acme",
-    tokens=[primary, surface],
+    tokens=colors + space,
     artifacts=[
         Artifact("android", "dist/acme/android"),
         Artifact("apple", "dist/acme/apple"),
-        Artifact(
-            "compose",
-            "dist/acme/compose",
-            package="com.acme.android.design"
-        ),
+        Artifact("compose", "dist/acme/compose", package="com.acme.android.design"),
         Artifact("css", "dist/acme/css"),
     ],
 )
+```
+
+Forje emits platform-native representations from the source code:
+
+```css
+:root {
+  --dimen-space-s: 0.5rem;
+  --dimen-space-m: 1rem;
+  --dimen-space-l: 2rem;
+  --dimen-space-xl: 4rem;
+}
+
+:root {
+  --color-primary: rgb(0 105 168);
+  --color-surface: rgb(245 245 245);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: rgb(116 212 255);
+    --color-surface: rgb(23 23 23);
+  }
+}
+
+:root[data-theme="light"] {
+  --color-primary: rgb(0 105 168);
+  --color-surface: rgb(245 245 245);
+}
+
+:root[data-theme="dark"] {
+  --color-primary: rgb(116 212 255);
+  --color-surface: rgb(23 23 23);
+}
+
+@supports (color: oklch(0% 0 0)) {
+  :root {
+    --color-primary: oklch(0.5 0.134 242.749);
+    --color-surface: oklch(0.97 0 none);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-primary: oklch(0.828 0.111 230.318);
+      --color-surface: oklch(0.205 0 none);
+    }
+  }
+
+  :root[data-theme="light"] {
+    --color-primary: oklch(0.5 0.134 242.749);
+    --color-surface: oklch(0.97 0 none);
+  }
+
+  :root[data-theme="dark"] {
+    --color-primary: oklch(0.828 0.111 230.318);
+    --color-surface: oklch(0.205 0 none);
+  }
+}
 ```
 
 ## Installation
