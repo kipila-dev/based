@@ -108,8 +108,8 @@ color = struct(
     ColorRecord=ColorRecord,
     ColorSelector=ColorSelector,
     Color=Color,
-    oklch=_oklch,
-    display_p3=_display_p3,
-    srgb=_srgb,
-    xyz_d65=_xyz_d65,
+    Oklch=_oklch,
+    DisplayP3=_display_p3,
+    Srgb=_srgb,
+    XyzD65=_xyz_d65,
 )

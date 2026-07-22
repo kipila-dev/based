@@ -26,13 +26,15 @@ __all__ = [
 ]
 
 ColorSpace = Literal["oklch", "display-p3", "srgb", "xyz-d65"]
-DimensionKind = Literal["spacing", "size", "font"]
 ColorSelector = Literal["light", "dark", "high_contrast_light", "high_contrast_dark"]
-DimensionSelector = Literal["default"]
-TokenKind = Literal["color", "dimension"]
-
 type ColorToken = TokenNode[ColorNode, Literal["color"], ColorSelector]
+
+DimensionKind = Literal["spacing", "size", "font"]
+DimensionSelector = Literal["default"]
 type DimensionToken = TokenNode[DimensionNode, Literal["dimension"], DimensionSelector]
+
+
+TokenKind = Literal["color", "dimension"]
 type AnySelector = ColorSelector | DimensionSelector
 type AnyToken = Annotated[ColorToken | DimensionToken, Field(discriminator="kind")]
 
