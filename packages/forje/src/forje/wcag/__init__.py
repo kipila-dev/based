@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
-from forje.dsl import Module
+from forje.core.dsl import Module
 
 from .wcag import WCAGValidation
 

@@ -8,7 +8,7 @@ from resforge import Color
 from resforge.apple import Appearance, AppleColor, AssetCatalog
 from resforge.io import MemorySink
 
-from forje.backend import Backend
+from forje.core.backend import Backend
 from forje.ir import ArtifactNode, ColorNode, ColorSelector, TargetNode
 from forje.ir.utils import get_config
 

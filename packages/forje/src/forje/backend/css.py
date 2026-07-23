@@ -8,7 +8,7 @@ from typing import final, override
 from resforge import Color
 from resforge.io import MemorySink
 
-from forje.backend import Backend
+from forje.core.backend import Backend
 from forje.ir import (
     ArtifactNode,
     ColorNode,

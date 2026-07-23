@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from forje.core.context import Context
+from forje.core.dsl import Module
 from forje.core.errors import ForjeValidationError
-from forje.dsl import Module
 from forje.ir import TargetNode, artifact_adapter, token_adapter
 
 __all__ = ["module"]

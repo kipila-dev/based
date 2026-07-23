@@ -8,7 +8,7 @@ from resforge import Color
 from resforge.android import ValuesWriter
 from resforge.io import MemorySink, WriteSink
 
-from forje.backend import Backend
+from forje.core.backend import Backend
 from forje.ir import ArtifactNode, ColorNode, ColorSelector, TargetNode
 from forje.ir.utils import get_config
 
