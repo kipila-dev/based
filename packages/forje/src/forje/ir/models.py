@@ -96,7 +96,6 @@ class IR:
     """The intermediate representation of a parsed build script."""
 
     targets: dict[str, TargetNode] = Field(default_factory=dict)
-    outputs: dict[str, dict[str, dict[str, bytes]]] = Field(default_factory=dict)
 
 
 artifact_adapter = TypeAdapter(ArtifactNode)

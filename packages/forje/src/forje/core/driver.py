@@ -3,41 +3,33 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, final
+from typing import TYPE_CHECKING
 
 from forje.core.frontend import evaluate
+from forje.core.result import CompilationResult, codegen
 
 if TYPE_CHECKING:
     from forje.core.environment import Environment
     from forje.core.pas import Pass
 
-__all__ = ["Driver"]
+__all__ = ["run_pipeline"]
 
 
-@final
-class Driver:
-    """Orchestrates the compilation and artifact generation pipeline."""
+def run_pipeline(
+    env: Environment,
+    source: str,
+    pipeline: list[Pass],
+) -> CompilationResult:
+    """Evaluates the build script, runs the pass pipeline, and emits artifacts.
 
-    def __init__(self, env: Environment) -> None:
-        self._env = env
+    Args:
+        env: The build environment.
+        source: Contents of the build script file.
+        pipeline: Ordered list of passes to execute.
+    """
+    ir = evaluate(env, source)
 
-    def build(
-        self,
-        source: str,
-        pipeline: list[Pass],
-    ) -> dict[str, dict[str, dict[str, bytes]]]:
-        """Evaluates the build script and runs the pass pipeline.
+    for pas in pipeline:
+        pas.run(ir)
 
-        Args:
-            source: Contents of a build.forje file.
-            pipeline: Ordered list of passes to execute.
-
-        Returns:
-            Nested dict keyed by target id -> platform -> file path -> bytes.
-        """
-        ir = evaluate(self._env, source)
-
-        for pas in pipeline:
-            pas.run(ir)
-
-        return ir.outputs
+    return codegen(env, ir)

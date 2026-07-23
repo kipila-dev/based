@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import time
-from collections.abc import Generator
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
 
@@ -13,11 +12,10 @@ from rich import print  # noqa: A004
 from forje import __version__
 from forje.cli.ui import error, success
 from forje.cli.utils import format_elapsed
-from forje.core.driver import Driver
+from forje.core.driver import run_pipeline
 from forje.core.environment import Environment
 from forje.core.errors import ForjeError
 from forje.core.loader import load_plugins
-from forje.pas.codegen import Codegen
 from forje.pas.color_norm import ColorCanonicalizer
 from forje.pas.resolution import AnnotationsResolver
 from forje.pas.validation import PlatformSupport, TargetFilter, TargetValidation
@@ -90,12 +88,11 @@ def build(
             AnnotationsResolver(env),
             ColorCanonicalizer(),
             *env.passes,
-            Codegen(env),
         ]
 
-        outputs = Driver(env).build(source, pipeline)
+        result = run_pipeline(env, source, pipeline)
 
-        for _, _, file_path, file_bytes in _walk_files(outputs):
+        for _, _, file_path, file_bytes in result.walk():
             with atomic_write(file_path) as f:
                 _ = f.write(file_bytes)
     except* ForjeError as eg:
@@ -106,15 +103,6 @@ def build(
 
     elapsed = time.perf_counter() - start
     success(f"Build succeeded in {format_elapsed(elapsed)}")
-
-
-def _walk_files(
-    results: dict[str, dict[str, dict[str, bytes]]],
-) -> Generator[tuple[str, str, str, bytes]]:
-    for target, platforms in results.items():
-        for platform, files in platforms.items():
-            for file_path, file_bytes in files.items():
-                yield target, platform, file_path, file_bytes
 
 
 if __name__ == "__main__":
