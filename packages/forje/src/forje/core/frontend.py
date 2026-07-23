@@ -14,8 +14,8 @@ from forje.ir import IR
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from forje.core.dsl import Module
     from forje.core.environment import Environment
-    from forje.dsl.module import Module
 
 __all__ = ["evaluate"]
 

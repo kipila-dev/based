@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, cast
 
 from pydantic import TypeAdapter
 
-from forje.backend import Backend
+from forje.core.backend import Backend
+from forje.core.dsl import Module
 from forje.core.errors import ForjePluginLoadError
 from forje.core.pas import Pass
-from forje.dsl import Module
 
 if TYPE_CHECKING:
     from collections.abc import Callable

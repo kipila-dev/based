@@ -6,9 +6,9 @@ from typing import final
 
 from pydantic import TypeAdapter
 
-from forje.backend import Backend
+from forje.core.backend import Backend
+from forje.core.dsl import Module
 from forje.core.pas import Pass
-from forje.dsl import Module
 
 __all__ = ["Environment"]
 

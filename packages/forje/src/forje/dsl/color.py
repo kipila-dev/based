@@ -3,7 +3,7 @@
 
 import re
 
-from forje.dsl import Module
+from forje.core.dsl import Module
 
 __all__ = ["module"]
 
