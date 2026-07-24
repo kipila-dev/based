@@ -41,6 +41,9 @@ docstring-code-format = true
   "TRY301",
 ]
 
+[tool.ruff.lint.flake8-copyright]
+notice-rgx = "(?i)(Copyright|SPDX-FileCopyrightText)"
+
 [tool.basedpyright]
 venvPath = "."
 venv = ".venv"
