@@ -23,6 +23,6 @@ class Environment:
     """
 
     modules: list[Module]
-    annotations_adapters: list[TypeAdapter[object]]
+    adapters: dict[str, TypeAdapter[object]]
     passes: list[Pass]
     backends: dict[str, Backend]

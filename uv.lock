@@ -131,6 +131,7 @@ dependencies = [
     { name = "coloraide" },
     { name = "pydantic" },
     { name = "resforge" },
+    { name = "rich" },
     { name = "starlark-pyo3" },
     { name = "typer" },
 ]
@@ -140,6 +141,7 @@ requires-dist = [
     { name = "coloraide" },
     { name = "pydantic" },
     { name = "resforge", editable = "packages/resforge" },
+    { name = "rich" },
     { name = "starlark-pyo3" },
     { name = "typer" },
 ]

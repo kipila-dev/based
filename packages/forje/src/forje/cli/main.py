@@ -1,16 +1,19 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
+import platform
+import sys
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
 
 import typer
 from resforge.io import atomic_write
-from rich import print  # noqa: A004
+from rich import box
+from rich.table import Table
 
 from forje import __version__
-from forje.cli.ui import error, success
+from forje.cli.ui import console, error, success
 from forje.cli.utils import format_elapsed
 from forje.core.driver import run_pipeline
 from forje.core.environment import Environment
@@ -37,7 +40,7 @@ def _find_build_file() -> Path | None:
 
 def _version_callback(*, value: bool) -> None:
     if value:
-        print(f"forje {__version__}")
+        console.print(f"forje {__version__}")
         raise typer.Exit
 
 
@@ -103,6 +106,35 @@ def build(
 
     elapsed = time.perf_counter() - start
     success(f"Build succeeded in {format_elapsed(elapsed)}")
+
+
+@app.command()
+def doctor() -> None:
+    """Diagnose the environment and installed plugins."""
+    try:
+        env = Environment(*load_plugins())
+    except ForjeError as e:
+        error(f"Failed to load plugins: {e}")
+        raise typer.Exit(code=1) from e
+
+    table = Table(box=box.SIMPLE, show_header=False, pad_edge=False)
+    table.add_column(style="dim")
+    table.add_column(style="bold")
+    table.add_row("Python", sys.version.split()[0])
+    table.add_row("Platform", platform.platform())
+    table.add_row("Forje", __version__)
+    table.add_row()
+    table.add_row("DSL modules", ",".join(m.name for m in env.modules if m.name))
+    table.add_row("Backends", ",".join(env.backends))
+    table.add_row("Passes", ",".join(type(p).__name__ for p in env.passes))
+    table.add_row("Adapters", ",".join(env.adapters.keys()))
+    console.print(table)
+
+    build_file = _find_build_file()
+    if build_file:
+        success(f"build.forje found at {build_file}")
+    else:
+        error("build.forje not found in current directory")
 
 
 if __name__ == "__main__":

@@ -93,4 +93,4 @@ class AnnotationsResolver(Pass):
 
     @override
     def run(self, ir: IR) -> None:
-        _resolve(ir, self._env.annotations_adapters, seen=set())
+        _resolve(ir, list(self._env.adapters.values()), seen=set())
