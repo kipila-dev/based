@@ -160,8 +160,8 @@ implementation, see the built-in `forje.wcag` module.
 [project.entry-points."forje.dsl"]
 myplugin = "myplugin.dsl:myplugin_module"
 
-# Annotations adapter
-[project.entry-points."forje.annotations_adapter"]
+# Type adapter
+[project.entry-points."forje.adapter"]
 mynode = "myplugin.models:mynode_adapter"
 
 # Compiler pass

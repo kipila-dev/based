@@ -48,7 +48,7 @@ def _load[T](
 
 def load_plugins() -> tuple[
     list[Module],
-    list[TypeAdapter[object]],
+    dict[str, TypeAdapter[object]],
     list[Pass],
     dict[str, Backend],
 ]:
@@ -61,15 +61,11 @@ def load_plugins() -> tuple[
     modules = [m for _, m in _load("forje.dsl", Module)]
     modules.sort(key=lambda m: m.priority)
 
-    adapters: list[tuple[str, TypeAdapter[object]]] = _load(
-        "forje.annotations_adapter",
-        TypeAdapter,
-    )
-    annotations_adapters = [a for _, a in adapters]
+    adapters: dict[str, TypeAdapter[object]] = dict(_load("forje.adapter", TypeAdapter))
 
     passes = [p for _, p in _load("forje.pass", Pass, instantiate=True)]
     passes.sort(key=lambda p: p.priority)
 
     backends = dict(_load("forje.backend", Backend, instantiate=True))
 
-    return modules, annotations_adapters, passes, backends
+    return modules, adapters, passes, backends

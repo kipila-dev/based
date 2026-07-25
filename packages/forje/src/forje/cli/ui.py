@@ -2,8 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import typer
+from rich.console import Console
 
-__all__ = ["error", "success"]
+__all__ = ["console", "error", "success"]
+
+console = Console(soft_wrap=True)
 
 
 def error(message: str) -> None:

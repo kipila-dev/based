@@ -13,7 +13,14 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
 authors = [{ name = "Kipila Ltd", email = "hello@kipila.dev" }]
-dependencies = ["coloraide", "pydantic", "resforge", "starlark-pyo3", "typer"]
+dependencies = [
+  "coloraide",
+  "pydantic",
+  "resforge",
+  "rich",
+  "starlark-pyo3",
+  "typer",
+]
 
 [project.urls]
 Homepage = "https://kipila.dev"
@@ -29,7 +36,7 @@ dimen = "forje.dsl.dimen:module"
 stdlib = "forje.dsl.stdlib:module"
 wcag = "forje.wcag:module"
 
-[project.entry-points."forje.annotations_adapter"]
+[project.entry-points."forje.adapter"]
 against = "forje.wcag.models:against_adapter"
 artifact = "forje.ir:artifact_adapter"
 color = "forje.ir:color_adapter"
