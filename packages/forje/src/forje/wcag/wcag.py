@@ -50,7 +50,7 @@ def _expand_mapping(
 
 
 def _make_coloraide_color(node: ColorNode) -> coloraide.Color:
-    return coloraide.Color("xyz-d65", node.coords, node.alpha)
+    return coloraide.Color(node.space, node.coords, node.alpha)
 
 
 def _validate_contrast(
