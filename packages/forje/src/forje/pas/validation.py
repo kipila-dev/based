@@ -2,14 +2,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import dataclasses
-from typing import final, override
+import re
+from typing import cast, final, override
 
 from forje.core.environment import Environment
 from forje.core.errors import ForjeError
 from forje.core.pas import Pass
-from forje.ir import IR
+from forje.ir import IR, TokenNode
+from forje.ir.utils import walk_ir
 
-__all__ = ["PlatformSupport", "TargetFilter", "TargetValidation"]
+__all__ = ["PlatformSupport", "TargetFilter", "TargetValidation", "TokenNameValidator"]
 
 
 @final
@@ -78,3 +80,20 @@ class PlatformSupport(Pass):
             raise ForjeError(msg)
 
         return ir
+
+
+@final
+class TokenNameValidator(Pass):
+    """Verifies that every token name follows dot notation."""
+
+    _pattern = re.compile(r"^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$")
+
+    @override
+    def run(self, ir: IR) -> IR:
+        return cast("IR", walk_ir(ir, self._validate_token_name))
+
+    def _validate_token_name(self, obj: object) -> object:
+        if isinstance(obj, TokenNode) and not self._pattern.fullmatch(obj.name):
+            msg = f"Invalid token name: '{obj.name}'"
+            raise ForjeError(msg)
+        return cast("object", obj)
