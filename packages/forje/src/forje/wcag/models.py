@@ -14,7 +14,7 @@ Role = Literal["text", "large_text", "non_text"]
 Level = Literal["aa", "aaa"]
 
 
-@dataclass(config=ConfigDict(extra="forbid"))
+@dataclass(frozen=True, config=ConfigDict(extra="forbid"))
 class AgainstNode:
     """A WCAG contrast requirement that links foreground token to a background token."""
 
