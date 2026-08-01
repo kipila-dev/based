@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
+import dataclasses
 from typing import final, override
 
 from forje.core.environment import Environment
@@ -22,18 +23,19 @@ class TargetFilter(Pass):
         self._active_targets = active_targets or []
 
     @override
-    def run(self, ir: IR) -> None:
-        if self._active_targets:
-            all_targets = [t.id for t in ir.targets.values()]
-            unknown_targets = [t for t in self._active_targets if t not in all_targets]
-            if unknown_targets:
-                noun = "target" if len(unknown_targets) == 1 else "targets"
-                msg = f"Unknown {noun}: {', '.join(unknown_targets)}"
-                raise ForjeError(msg)
+    def run(self, ir: IR) -> IR:
+        if not self._active_targets:
+            return ir
 
-            ir.targets = {
-                k: v for k, v in ir.targets.items() if k in self._active_targets
-            }
+        all_targets = [t.id for t in ir.targets.values()]
+        unknown_targets = [t for t in self._active_targets if t not in all_targets]
+        if unknown_targets:
+            noun = "target" if len(unknown_targets) == 1 else "targets"
+            msg = f"Unknown {noun}: {', '.join(unknown_targets)}"
+            raise ForjeError(msg)
+
+        targets = {k: v for k, v in ir.targets.items() if k in self._active_targets}
+        return dataclasses.replace(ir, targets=targets)
 
 
 @final
@@ -41,7 +43,7 @@ class TargetValidation(Pass):
     """Validates target configuration constraints."""
 
     @override
-    def run(self, ir: IR) -> None:
+    def run(self, ir: IR) -> IR:
         if not ir.targets:
             msg = "No targets defined in the build configuration"
             raise ForjeError(msg)
@@ -52,6 +54,8 @@ class TargetValidation(Pass):
             msg = f"Empty {noun}: {', '.join(empty_targets)}"
             raise ForjeError(msg)
 
+        return ir
+
 
 @final
 class PlatformSupport(Pass):
@@ -61,13 +65,16 @@ class PlatformSupport(Pass):
         self._env = env
 
     @override
-    def run(self, ir: IR) -> None:
+    def run(self, ir: IR) -> IR:
         all_platforms = self._env.backends.keys()
         active_platforms = {
             a.platform for t in ir.targets.values() for a in t.artifacts
         }
         unknown_platforms = active_platforms - all_platforms
+
         if unknown_platforms:
             platforms = ", ".join(f"'{p}'" for p in sorted(unknown_platforms))
             msg = f"No backend registered for platforms: {platforms}"
             raise ForjeError(msg)
+
+        return ir

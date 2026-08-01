@@ -7,18 +7,35 @@ from typing import TYPE_CHECKING
 
 from forje.core.frontend import evaluate
 from forje.core.result import CompilationResult, codegen
+from forje.pas.color_norm import ColorCanonicalizer
+from forje.pas.resolver import DictResolver
+from forje.pas.validation import PlatformSupport, TargetFilter, TargetValidation
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from forje.core.environment import Environment
     from forje.core.pas import Pass
 
-__all__ = ["run_pipeline"]
+__all__ = ["compile_source", "default_pipeline"]
 
 
-def run_pipeline(
-    env: Environment,
+def default_pipeline(env: Environment, targets: list[str] | None) -> Sequence[Pass]:
+    """Builds the default pipeline configuration."""
+    return [
+        TargetFilter(targets),
+        TargetValidation(),
+        PlatformSupport(env),
+        DictResolver(env),
+        ColorCanonicalizer(),
+        *env.passes,
+    ]
+
+
+def compile_source(
     source: str,
-    pipeline: list[Pass],
+    env: Environment,
+    pipeline: Sequence[Pass],
 ) -> CompilationResult:
     """Evaluates the build script, runs the pass pipeline, and emits artifacts.
 
@@ -30,6 +47,6 @@ def run_pipeline(
     ir = evaluate(env, source)
 
     for pas in pipeline:
-        pas.run(ir)
+        ir = ir | pas
 
     return codegen(env, ir)

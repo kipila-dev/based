@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
+import dataclasses
+
 from forje.core.context import Context
 from forje.core.dsl import Module
 from forje.core.errors import ForjeValidationError
@@ -22,13 +24,14 @@ module = (
 
 
 @module.export(name="_sys_create_target")
-def create_target(ctx: Context, id_: str) -> None:
+def create_target(ctx: Context, target_id: str) -> None:
+    new_target = TargetNode(id=target_id)
     with ctx.lock:
-        if id_ in ctx.ir.targets:
-            msg = f"Duplicate target: {id_}"
+        if target_id in ctx.ir.targets:
+            msg = f"Duplicate target: {target_id}"
             raise ForjeValidationError(msg)
-
-        ctx.ir.targets[id_] = TargetNode(id=id_)
+        updated_targets = {**ctx.ir.targets, target_id: new_target}
+        ctx.ir = dataclasses.replace(ctx.ir, targets=updated_targets)
 
 
 @module.export(name="_sys_target_add_token")
@@ -37,14 +40,17 @@ def target_add_token(
     target_id: str,
     token: dict[str, object],
 ) -> None:
-    parsed = token_adapter.validate_python(token)
+    new_token = token_adapter.validate_python(token)
     with ctx.lock:
         try:
             target = ctx.ir.targets[target_id]
         except LookupError:
             msg = f"Invalid target: {target_id}"
             raise ForjeValidationError(msg) from None
-        target.tokens[parsed.name] = parsed
+        updated_tokens = {**target.tokens, new_token.name: new_token}
+        updated_target = dataclasses.replace(target, tokens=updated_tokens)
+        updated_targets = {**ctx.ir.targets, target_id: updated_target}
+        ctx.ir = dataclasses.replace(ctx.ir, targets=updated_targets)
 
 
 @module.export(name="_sys_target_add_artifact")
@@ -53,11 +59,14 @@ def target_add_artifact(
     target_id: str,
     artifact: dict[str, object],
 ) -> None:
-    parsed = artifact_adapter.validate_python(artifact)
+    new_artifact = artifact_adapter.validate_python(artifact)
     with ctx.lock:
         try:
             target = ctx.ir.targets[target_id]
         except LookupError:
             msg = f"Invalid target: {target_id}"
             raise ForjeValidationError(msg) from None
-        target.artifacts.append(parsed)
+        updated_artifacts = (*target.artifacts, new_artifact)
+        updated_target = dataclasses.replace(target, artifacts=updated_artifacts)
+        updated_targets = {**ctx.ir.targets, target_id: updated_target}
+        ctx.ir = dataclasses.replace(ctx.ir, targets=updated_targets)

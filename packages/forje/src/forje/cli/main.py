@@ -5,7 +5,7 @@ import platform
 import sys
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
 
 import typer
 from resforge.io import atomic_write
@@ -15,16 +15,10 @@ from rich.table import Table
 from forje import __version__
 from forje.cli.ui import console, error, success
 from forje.cli.utils import format_elapsed
-from forje.core.driver import run_pipeline
+from forje.core.compiler import compile_source, default_pipeline
 from forje.core.environment import Environment
 from forje.core.errors import ForjeError
 from forje.core.loader import load_plugins
-from forje.pas.color_norm import ColorCanonicalizer
-from forje.pas.resolution import AnnotationsResolver
-from forje.pas.validation import PlatformSupport, TargetFilter, TargetValidation
-
-if TYPE_CHECKING:
-    from forje.core.pas import Pass
 
 app = typer.Typer(
     name="forje",
@@ -83,17 +77,8 @@ def build(
 
     try:
         env = Environment(*load_plugins())
-
-        pipeline: list[Pass] = [
-            TargetFilter(targets),
-            TargetValidation(),
-            PlatformSupport(env),
-            AnnotationsResolver(env),
-            ColorCanonicalizer(),
-            *env.passes,
-        ]
-
-        result = run_pipeline(env, source, pipeline)
+        pipeline = default_pipeline(env, targets)
+        result = compile_source(source, env, pipeline)
 
         for _, _, file_path, file_bytes in result.walk():
             with atomic_write(file_path) as f:

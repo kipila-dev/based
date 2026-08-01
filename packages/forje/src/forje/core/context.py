@@ -6,7 +6,7 @@ from __future__ import annotations
 from contextvars import ContextVar, Token
 from dataclasses import dataclass, field
 from threading import RLock
-from typing import TYPE_CHECKING, cast, final, override
+from typing import TYPE_CHECKING, final
 
 if TYPE_CHECKING:
     from forje.ir import IR
@@ -26,19 +26,17 @@ class Context:
 
 
 class _ContextProxy:
-    def __getattr__(self, name: str) -> object:
-        try:
-            return cast("object", getattr(_ctx.get(), name))
-        except LookupError as e:
-            msg = "No build context active."
-            raise RuntimeError(msg) from e
+    @property
+    def ir(self) -> IR:
+        return _ctx.get().ir
 
-    @override
-    def __repr__(self) -> str:
-        try:
-            return repr(_ctx.get())
-        except LookupError:
-            return "<empty build context proxy>"
+    @ir.setter
+    def ir(self, value: IR) -> None:
+        _ctx.get().ir = value
+
+    @property
+    def lock(self) -> RLock:
+        return _ctx.get().lock
 
     @classmethod
     def set_context(cls, ctx: Context) -> Token[Context]:

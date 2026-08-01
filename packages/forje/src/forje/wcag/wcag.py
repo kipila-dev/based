@@ -9,6 +9,7 @@ import coloraide
 from forje.core.errors import ForjeValidationError
 from forje.core.pas import Pass
 from forje.ir import IR, ColorNode, ColorSelector, ColorToken, TargetNode
+from forje.ir.models import ImmutableMapping
 from forje.wcag.models import AgainstNode, Level, Role
 
 __all__ = ["WCAGValidation"]
@@ -37,8 +38,8 @@ def _walk_wcag_tokens(
 
 
 def _expand_mapping(
-    variants: dict[ColorSelector, ColorNode],
-) -> dict[ColorSelector, ColorNode]:
+    variants: ImmutableMapping[ColorSelector, ColorNode],
+) -> ImmutableMapping[ColorSelector, ColorNode]:
     light = variants["light"]
     dark = variants.get("dark", light)
     return {
@@ -89,7 +90,7 @@ class WCAGValidation(Pass):
     """Validates contrast ratios for tokens with WCAG constraints in `annotations`."""
 
     @override
-    def run(self, ir: IR) -> None:
+    def run(self, ir: IR) -> IR:
         errors: list[ForjeValidationError] = []
 
         for target, token, wcag_nodes in _walk_wcag_tokens(ir):
@@ -99,3 +100,5 @@ class WCAGValidation(Pass):
         if errors:
             msg = "WCAG validation failed"
             raise ExceptionGroup(msg, errors)
+
+        return ir

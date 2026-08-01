@@ -11,12 +11,14 @@ __all__ = ["Pass"]
 class Pass(ABC):
     """A compiler pass.
 
-    Passes are executed sequentially by the `Driver` pipeline and are allowed
-    to modify the `IR` in-place.
+    Passes are executed sequentially by the driver based on their priority.
     """
 
     priority: int = 0
 
+    def __ror__(self, ir: IR, /) -> IR:
+        return self.run(ir)
+
     @abstractmethod
-    def run(self, ir: IR) -> None:
-        """Executes the compiler pass logic on the given IR instance."""
+    def run(self, ir: IR) -> IR:
+        """Executes the compiler pass and returns a new IR copy."""

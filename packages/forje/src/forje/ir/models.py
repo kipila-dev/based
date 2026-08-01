@@ -3,9 +3,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from types import MappingProxyType
 from typing import Annotated, Literal
 
-from pydantic import ConfigDict, Field, TypeAdapter
+from pydantic import BeforeValidator, ConfigDict, Field, TypeAdapter
 from pydantic.dataclasses import dataclass
 
 __all__ = [
@@ -16,6 +18,7 @@ __all__ = [
     "ColorToken",
     "DimensionNode",
     "DimensionToken",
+    "ImmutableMapping",
     "TargetNode",
     "TokenNode",
     "artifact_adapter",
@@ -24,6 +27,19 @@ __all__ = [
     "target_adapter",
     "token_adapter",
 ]
+
+
+def _to_mapping_proxy[K, V](value: Mapping[K, V]) -> MappingProxyType[K, V]:
+    if isinstance(value, MappingProxyType):
+        return value
+    return MappingProxyType(dict(value))
+
+
+type ImmutableMapping[K, V] = Annotated[
+    Mapping[K, V],
+    BeforeValidator(_to_mapping_proxy),
+]
+
 
 ColorSpace = Literal["oklch", "display-p3", "srgb", "xyz-d65"]
 ColorSelector = Literal["light", "dark", "high_contrast_light", "high_contrast_dark"]
@@ -39,12 +55,12 @@ type AnySelector = ColorSelector | DimensionSelector
 type AnyToken = Annotated[ColorToken | DimensionToken, Field(discriminator="kind")]
 
 
-@dataclass(config=ConfigDict(extra="forbid"))
+@dataclass(frozen=True, config=ConfigDict(extra="forbid"))
 class ValueNode:
     """Base class for token values."""
 
 
-@dataclass(config=ConfigDict(extra="forbid"))
+@dataclass(frozen=True, config=ConfigDict(extra="forbid"))
 class ColorNode(ValueNode):
     """A color value in a specific color space."""
 
@@ -54,7 +70,7 @@ class ColorNode(ValueNode):
     type: Literal["color"] = "color"
 
 
-@dataclass(config=ConfigDict(extra="forbid"))
+@dataclass(frozen=True, config=ConfigDict(extra="forbid"))
 class DimensionNode(ValueNode):
     """A dimension value."""
 
@@ -63,39 +79,39 @@ class DimensionNode(ValueNode):
     type: Literal["dimension"] = "dimension"
 
 
-@dataclass(config=ConfigDict(extra="forbid"))
+@dataclass(frozen=True, config=ConfigDict(extra="forbid"))
 class TokenNode[T: ValueNode, K: TokenKind, S: AnySelector]:
     """A named design token with one or more variants."""
 
     name: str
     kind: K
-    variants: dict[S, T]
-    annotations: list[object] = Field(default_factory=list)
+    variants: ImmutableMapping[S, T]
+    annotations: tuple[object, ...] = Field(default_factory=tuple)
 
 
-@dataclass(config=ConfigDict(extra="forbid"))
+@dataclass(frozen=True, config=ConfigDict(extra="forbid"))
 class ArtifactNode:
     """Output configuration for a single platform."""
 
     platform: str
     path: str
-    config: dict[str, object] = Field(default_factory=dict)
+    config: ImmutableMapping[str, object] = Field(default_factory=dict)
 
 
-@dataclass(config=ConfigDict(extra="forbid"))
+@dataclass(frozen=True, config=ConfigDict(extra="forbid"))
 class TargetNode:
     """A named build target grouping tokens and artifact configs."""
 
     id: str
-    tokens: dict[str, AnyToken] = Field(default_factory=dict)
-    artifacts: list[ArtifactNode] = Field(default_factory=list)
+    tokens: ImmutableMapping[str, AnyToken] = Field(default_factory=dict)
+    artifacts: tuple[ArtifactNode, ...] = Field(default_factory=tuple)
 
 
-@dataclass
+@dataclass(frozen=True, config=ConfigDict(extra="forbid"))
 class IR:
     """The intermediate representation of a parsed build script."""
 
-    targets: dict[str, TargetNode] = Field(default_factory=dict)
+    targets: ImmutableMapping[str, TargetNode] = Field(default_factory=dict)
 
 
 artifact_adapter = TypeAdapter(ArtifactNode)
