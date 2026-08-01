@@ -15,10 +15,7 @@ __all__ = ["ColorCanonicalizer"]
 
 
 def _normalize_color_node(node: object) -> object:
-    if not isinstance(node, ColorNode):
-        return node
-
-    if node.space == "xyz-d65":
+    if not isinstance(node, ColorNode) or node.space == "xyz-d65":
         return node
 
     color = coloraide.Color(node.space, node.coords, alpha=node.alpha).convert(

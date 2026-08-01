@@ -9,7 +9,12 @@ from forje.core.frontend import evaluate
 from forje.core.result import CompilationResult, codegen
 from forje.pas.color_norm import ColorCanonicalizer
 from forje.pas.resolver import DictResolver
-from forje.pas.validation import PlatformSupport, TargetFilter, TargetValidation
+from forje.pas.validation import (
+    PlatformSupport,
+    TargetFilter,
+    TargetValidation,
+    TokenNameValidator,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -27,6 +32,7 @@ def default_pipeline(env: Environment, targets: list[str] | None) -> Sequence[Pa
         TargetValidation(),
         PlatformSupport(env),
         DictResolver(env),
+        TokenNameValidator(),
         ColorCanonicalizer(),
         *env.passes,
     ]
