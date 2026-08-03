@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-uv-and-sync
-      - run: uv run basedpyright
+      - run: uv run ty check
   test:
     needs: lint
     runs-on: ubuntu-latest
