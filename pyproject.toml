@@ -43,3 +43,6 @@ docstring-code-format = true
 
 [tool.ruff.lint.flake8-copyright]
 notice-rgx = "(?i)(Copyright|SPDX-FileCopyrightText)"
+
+[tool.ty.environment]
+root = ["packages"]
