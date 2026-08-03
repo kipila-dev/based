@@ -14,7 +14,7 @@ class _HasActiveContext(Protocol):
 
 
 def require_context[T: _HasActiveContext, **P, R](
-    func: Callable[Concatenate[T, P], R],
+    fun: Callable[Concatenate[T, P], R],
 ) -> Callable[Concatenate[T, P], R]:
     """Ensures a method is only called within an active context.
 
@@ -24,11 +24,12 @@ def require_context[T: _HasActiveContext, **P, R](
 
     """
 
-    @wraps(func)
+    @wraps(fun)
     def wrapper(self: T, *args: P.args, **kwargs: P.kwargs) -> R:
-        if not self._active:  # pyright: ignore[reportPrivateUsage]
-            msg = f"'{func.__name__}' requires an active 'with' context."
+        if not self._active:
+            fun_name = getattr(fun, "__name__", "unknown")
+            msg = f"'{fun_name}' requires an active 'with' context."
             raise RuntimeError(msg)
-        return func(self, *args, **kwargs)
+        return fun(self, *args, **kwargs)
 
     return wrapper

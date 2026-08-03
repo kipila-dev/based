@@ -96,4 +96,4 @@ class TokenNameValidator(Pass):
         if isinstance(obj, TokenNode) and not self._pattern.fullmatch(obj.name):
             msg = f"Invalid token name: '{obj.name}'"
             raise ForjeError(msg)
-        return cast("object", obj)
+        return obj

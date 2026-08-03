@@ -56,7 +56,7 @@ class _BaseComposeScope:
     def _to_compose_dimen_literal(dimen: Dimension) -> str:
         return f"{dimen.value}.{dimen.unit}"
 
-    @require_context
+    @require_context  # ty: ignore[invalid-argument-type]
     def color(self, **values: str | Color) -> Self:
         """Appends one or more Color properties to the Kotlin object."""
         if values:
@@ -70,7 +70,7 @@ class _BaseComposeScope:
             )
         return self
 
-    @require_context
+    @require_context  # ty: ignore[invalid-argument-type]
     def dimension(self, **values: Dimension) -> Self:
         """Appends one or more Dimension properties to the Kotlin object.
 

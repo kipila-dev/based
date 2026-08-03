@@ -1,18 +1,21 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
+from __future__ import annotations
+
 import re
 import xml.etree.ElementTree as ET
 from io import BytesIO
 from pathlib import Path
 from re import Pattern
-from typing import Self, final
+from typing import TYPE_CHECKING, Self, final
 
 from resforge import Color
 from resforge._utils import require_context
 from resforge.io import FileSystemSink, WriteSink
 
-from .types import Dimension, PluralValues
+if TYPE_CHECKING:
+    from .types import Dimension, PluralValues
 
 __all__ = ["ValuesWriter"]
 
@@ -125,28 +128,28 @@ class ValuesWriter:
         return self
 
     @require_context
-    def comment(self, text: str) -> Self:
+    def comment(self, text: str) -> ValuesWriter:
         """Appends an XML comment."""
         sanitized = text.replace("--", "- -")
         self._root.append(ET.Comment(f" {sanitized} "))
         return self
 
     @require_context
-    def string(self, **values: str) -> Self:
+    def string(self, **values: str) -> ValuesWriter:
         """Appends one or more <string> resources."""
         for name, val in values.items():
             self._append("string", name, self._sanitize(val))
         return self
 
     @require_context
-    def boolean(self, **values: bool) -> Self:
+    def boolean(self, **values: bool) -> ValuesWriter:
         """Appends one or more <bool> resources."""
         for name, val in values.items():
             self._append("bool", name, str(val).lower())
         return self
 
     @require_context
-    def color(self, **values: str | Color) -> Self:
+    def color(self, **values: str | Color) -> ValuesWriter:
         """Appends one or more <color> resources.
 
         Supported hex string formats are #RGB, #ARGB, #RRGGBB, #AARRGGBB.
@@ -161,7 +164,7 @@ class ValuesWriter:
         return self
 
     @require_context
-    def dimension(self, **values: Dimension) -> Self:
+    def dimension(self, **values: Dimension) -> ValuesWriter:
         """Appends one or more <dimen> resources."""
         for name, value in values.items():
             if value.unit not in ["dp", "sp", "px", "pt", "in", "mm"]:
@@ -171,21 +174,21 @@ class ValuesWriter:
         return self
 
     @require_context
-    def res_id(self, *values: str) -> Self:
+    def res_id(self, *values: str) -> ValuesWriter:
         """Appends one or more <item type="id"> resources."""
         for name in values:
             self._append("item", name, attrs={"type": "id"})
         return self
 
     @require_context
-    def integer(self, **values: int) -> Self:
+    def integer(self, **values: int) -> ValuesWriter:
         """Appends one or more <integer> resources."""
         for name, val in values.items():
             self._append("integer", name, str(val))
         return self
 
     @require_context
-    def plurals(self, **values: PluralValues) -> Self:
+    def plurals(self, **values: PluralValues) -> ValuesWriter:
         """Appends one or more <plurals> resources."""
         for name, val in values.items():
             parent = self._append("plurals", name)
@@ -195,22 +198,22 @@ class ValuesWriter:
         return self
 
     @require_context
-    def typed_array(self, name: str, values: list[str]) -> Self:
+    def typed_array(self, name: str, values: list[str]) -> ValuesWriter:
         """Appends a generic <array> resource."""
         return self._append_array("array", name, values)
 
     @require_context
-    def integer_array(self, name: str, values: list[int]) -> Self:
+    def integer_array(self, name: str, values: list[int]) -> ValuesWriter:
         """Appends an <integer-array> resource."""
         return self._append_array("integer-array", name, values)
 
     @require_context
-    def string_array(self, name: str, values: list[str]) -> Self:
+    def string_array(self, name: str, values: list[str]) -> ValuesWriter:
         """Appends a <string-array> resource."""
         return self._append_array("string-array", name, values, sanitize=True)
 
     @require_context
-    def style(self, name: str, parent: str | None = None, **items: str) -> Self:
+    def style(self, name: str, parent: str | None = None, **items: str) -> ValuesWriter:
         """Appends a <style> resource."""
         attrs: dict[str, str] = {}
         if parent:
