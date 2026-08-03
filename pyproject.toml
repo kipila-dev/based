@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [dependency-groups]
-dev = ["basedpyright", "pre-commit", "pytest", "ruff"]
+dev = ["pre-commit", "pytest", "ruff", "ty"]
 
 [tool.uv.workspace]
 members = ["packages/*"]
@@ -43,11 +43,3 @@ docstring-code-format = true
 
 [tool.ruff.lint.flake8-copyright]
 notice-rgx = "(?i)(Copyright|SPDX-FileCopyrightText)"
-
-[tool.basedpyright]
-venvPath = "."
-venv = ".venv"
-include = ["packages"]
-typeCheckingMode = "recommended"
-pythonVersion = "3.12"
-reportUnusedCallResult = "none"

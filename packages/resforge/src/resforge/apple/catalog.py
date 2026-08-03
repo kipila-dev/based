@@ -1,17 +1,21 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
+from __future__ import annotations
+
 import json
 import shutil
 from io import BytesIO
 from pathlib import Path
-from typing import Self, final
+from typing import TYPE_CHECKING, Self, final
 
 from resforge._utils import require_context
 from resforge.io import FileSystemSink, WriteSink
 
 from ._colorset import ColorSet
-from .types import AppleColor
+
+if TYPE_CHECKING:
+    from .types import AppleColor
 
 __all__ = ["AssetCatalog"]
 
@@ -79,7 +83,7 @@ class AssetCatalog:
             self._active = False
 
     @require_context
-    def colorset(self, name: str, *colors: AppleColor) -> Self:
+    def colorset(self, name: str, *colors: AppleColor) -> AssetCatalog:
         """Creates a .colorset folder within the catalog.
 
         Args:
