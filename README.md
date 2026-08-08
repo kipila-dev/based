@@ -83,7 +83,7 @@ directly:
 - [`forje-tailwind`](https://github.com/kipila-dev/forje/tree/main/packages/forje-tailwind):
   Tailwind CSS color palette
 
-# Advanced Example
+## Advanced Example
 
 ```starlark
 colors = [
