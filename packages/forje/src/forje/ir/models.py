@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from types import MappingProxyType
-from typing import Annotated, Literal, cast
+from typing import Annotated, Literal
 
 from pydantic import BeforeValidator, ConfigDict, Field, TypeAdapter
 from pydantic.dataclasses import dataclass
@@ -31,7 +31,7 @@ __all__ = [
 
 def _to_mapping_proxy[K, V](value: Mapping[K, V]) -> MappingProxyType[K, V]:
     if isinstance(value, MappingProxyType):
-        return cast("MappingProxyType[K, V]", value)
+        return value
     return MappingProxyType(dict(value))
 
 

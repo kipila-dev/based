@@ -1,22 +1,89 @@
 # Forje
 
-**A compiler pipeline for design systems.**
+A compiler pipeline for design systems.
 
-Design tokens are source code. Forje treats your design system as a compilable
-program instead of a collection of transformation scripts. It parses build
-definitions into an intermediate representation, executes validation and
-transformation passes, and emits platform-specific artifacts. Build definitions
-are written in [Starlark](https://bazel.build/rules/language), the same language
-used by Bazel and Buck2.
+Build scripts are written in Starlark:
 
-Values are stored in typed, device-independent representations and converted
-into target-specific forms during compilation. Colors preserve their source
-color space, with wide-gamut values retained for targets that support them and
-clipped when converted to narrower gamuts such as sRGB.
+```starlark
+palette = struct(primary=color.Oklch(0.5, 0.134, 242.749))
+tokens = [Token("primary", light=palette.primary)]
 
-Dimensions are typed by semantic kinds (`spacing`, `size`, `font`). This allows
-backends to choose appropriate units during generation while keeping the source
-definition independent of implementation details.
+target(
+    id="acme",
+    tokens=tokens,
+    artifacts=[Artifact("css", "dist/acme/css")]
+)
+```
+
+## Installation
+
+```bash
+pip install forje
+```
+
+## Usage
+
+Create a `build.forje` in your project root and run:
+
+```bash
+forje build
+```
+
+## WCAG Contrast Validation
+
+Forje supports accessibility testing by letting you declare contrast
+requirements using the `wcag` annotations.
+
+```starlark
+load("wcag", "wcag")
+
+surface = Token("surface", Color("#FFFFFF"))
+primary = Token("primary", Color("#0284C7"))
+text = Token(
+    "text",
+    Color("#1E293B"),
+    # Will raise a validation error if text fails to meet the AA contrast
+    # ratio against surface.
+    annotations=wcag.against(surface, role=wcag.Role.Text, level=wcag.Level.AA)
+)
+
+target(
+    id="acme",
+    tokens=[surface, primary, text],
+    artifacts=[Artifact("android", "acme/res")],
+)
+```
+
+## Extending Forje
+
+Plugin interface is exposed via Python entry points. For a reference plugin
+implementation, see the built-in `forje.wcag` module.
+
+```toml
+# DSL extension
+[project.entry-points."forje.dsl"]
+myplugin = "myplugin.dsl:myplugin_module"
+
+# Type adapter
+[project.entry-points."forje.adapter"]
+mynode = "myplugin.models:mynode_adapter"
+
+# Compiler pass
+[project.entry-points."forje.pass"]
+myplugin = "myplugin.passes:MyValidation"
+
+# Platform backend
+[project.entry-points."forje.backend"]
+myplatform = "myplugin.backend:MyPlatformBackend"
+```
+
+The following plugins are maintained alongside Forje and can be installed
+directly:
+
+- [`forje-tailwind`](https://github.com/kipila-dev/forje/tree/main/packages/forje-tailwind):
+  Tailwind CSS color palette
+
+# Advanced Example
 
 ```starlark
 colors = [
@@ -50,8 +117,6 @@ target(
     ],
 )
 ```
-
-Forje emits platform-native representations from the source code:
 
 ```css
 :root {
@@ -107,74 +172,3 @@ Forje emits platform-native representations from the source code:
   }
 }
 ```
-
-## Installation
-
-```bash
-pip install forje
-```
-
-Requires Python 3.12+.
-
-## Usage
-
-Create a `build.forje` in your project root and run:
-
-```bash
-forje build
-```
-
-## WCAG Contrast Validation
-
-Forje supports accessibility testing by letting you declare contrast
-requirements directly on your tokens using the `wcag` API.
-
-```starlark
-load("wcag", "wcag")
-
-surface = Token("surface", Color("#FFFFFF"))
-primary = Token("primary", Color("#0284C7"))
-text = Token(
-    "text",
-    Color("#1E293B"),
-    annotations=wcag.against(surface, role=wcag.Role.Text, level=wcag.Level.AA)
-)
-
-target(
-    id="acme",
-    tokens=[surface, primary, text],
-    artifacts=[Artifact("android", "acme/res")],
-)
-```
-
-If `text` fails to meet the AA contrast ratio against `surface` during the
-compile step, Forje will raise a validation error.
-
-## Extending Forje
-
-Plugin interface is exposed via Python entry points. For a reference plugin
-implementation, see the built-in `forje.wcag` module.
-
-```toml
-# DSL extension
-[project.entry-points."forje.dsl"]
-myplugin = "myplugin.dsl:myplugin_module"
-
-# Type adapter
-[project.entry-points."forje.adapter"]
-mynode = "myplugin.models:mynode_adapter"
-
-# Compiler pass
-[project.entry-points."forje.pass"]
-myplugin = "myplugin.passes:MyValidation"
-
-# Platform backend
-[project.entry-points."forje.backend"]
-myplatform = "myplugin.backend:MyPlatformBackend"
-```
-
-The following plugins are maintained alongside Forje and can be installed
-directly:
-
-- [`forje-tailwind`](https://github.com/kipila-dev/forje/tree/main/packages/forje-tailwind):
-  Tailwind CSS color palette
