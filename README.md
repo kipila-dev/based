@@ -29,7 +29,7 @@ Create a `build.forje` in your project root and run:
 forje build
 ```
 
-## WCAG contrast validation
+## WCAG Contrast Validation
 
 Forje supports accessibility testing by letting you declare contrast
 requirements using the `wcag` annotations.
@@ -83,7 +83,7 @@ directly:
 - [`forje-tailwind`](https://github.com/kipila-dev/forje/tree/main/packages/forje-tailwind):
   Tailwind CSS color palette
 
-## Advanced example
+## Advanced Example
 
 ```starlark
 colors = [
