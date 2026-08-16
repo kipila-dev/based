@@ -1,4 +1,4 @@
-## AI Disclosure
+# AI Disclosure
 
 As of 2026-08-12, all AI-assisted development and LLM usage are strictly
 forbidden moving forward due to concerns regarding deskilling, unclear legal and
