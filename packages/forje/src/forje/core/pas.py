@@ -21,4 +21,7 @@ class Pass(ABC):
 
     @abstractmethod
     def run(self, ir: IR) -> IR:
-        """Executes the compiler pass and returns a new IR copy."""
+        """Executes the pass.
+
+        Returns a modified copy of the IR graph.
+        """

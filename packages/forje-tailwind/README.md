@@ -1,6 +1,6 @@
 # forje-tailwind
 
-Tailwind CSS color palette plugin for Forje.
+Tailwind CSS v4 color palette plugin for Forje.
 
 ## Installation
 
@@ -10,8 +10,7 @@ pip install forje-tailwind
 
 ## Usage
 
-Load the plugin in your `build.forje` and reference colors via
-`tailwind.color.<name>.<shade>`:
+Load the plugin and reference colors via `tailwind.color.<name>.<shade>`:
 
 ```starlark
 load("tailwind", "tailwind")

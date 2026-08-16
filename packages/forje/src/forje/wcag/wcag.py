@@ -87,7 +87,7 @@ def _validate_contrast(
 
 @final
 class WCAGValidation(Pass):
-    """Validates contrast ratios for tokens with WCAG constraints in `annotations`."""
+    """Validates contrast ratios for tokens with WCAG annotations."""
 
     @override
     def run(self, ir: IR) -> IR:
