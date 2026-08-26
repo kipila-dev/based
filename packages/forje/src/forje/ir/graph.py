@@ -11,8 +11,8 @@ from pydantic import BeforeValidator, ConfigDict, Field, TypeAdapter
 from pydantic.dataclasses import dataclass
 
 __all__ = [
-    "IR",
     "ArtifactNode",
+    "BuildGraph",
     "ColorNode",
     "ColorSpace",
     "ColorToken",
@@ -100,7 +100,7 @@ class ArtifactNode:
 
 @dataclass(frozen=True, config=ConfigDict(extra="forbid"))
 class TargetNode:
-    """A named build target grouping tokens and artifact configs."""
+    """A named build target."""
 
     id: str
     tokens: ImmutableMapping[str, AnyToken] = Field(default_factory=dict)
@@ -108,8 +108,8 @@ class TargetNode:
 
 
 @dataclass(frozen=True, config=ConfigDict(extra="forbid"))
-class IR:
-    """The intermediate representation of a parsed build script."""
+class BuildGraph:
+    """The intermediate representation of the build process."""
 
     targets: ImmutableMapping[str, TargetNode] = Field(default_factory=dict)
 

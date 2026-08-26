@@ -6,24 +6,24 @@ from collections.abc import Callable, Mapping, Sequence
 from collections.abc import Set as AbstractSet
 from typing import TYPE_CHECKING, cast
 
-from forje.ir.models import ImmutableMapping
+from forje.ir.graph import ImmutableMapping
 
 if TYPE_CHECKING:
     from _typeshed import DataclassInstance
 
-__all__ = ["get_config", "walk_ir"]
+__all__ = ["get_config", "walk_build_graph"]
 
 
-def walk_ir(
+def walk_build_graph(
     obj: object,
     visitor: Callable[[object], object],
     *,
     seen: set[int] | None = None,
 ) -> object:
-    """Walks the IR graph recursively and applies `visitor` to each value.
+    """Walks the build graph recursively and applies `visitor` to each node.
 
     Returns:
-        A transformed copy of the IR graph.
+        A transformed copy of the build graph.
     """
     if seen is None:
         seen = set()
@@ -101,7 +101,11 @@ def _walk_dataclass(
     seen: set[int],
 ) -> object:
     changes = {
-        f.name: walk_ir(cast("object", getattr(obj, f.name)), visitor, seen=seen)
+        f.name: walk_build_graph(
+            cast("object", getattr(obj, f.name)),
+            visitor,
+            seen=seen,
+        )
         for f in dataclasses.fields(obj)
         if f.init
     }
@@ -113,7 +117,7 @@ def _walk_mapping(
     visitor: Callable[[object], object],
     seen: set[int],
 ) -> object:
-    items = [(k, walk_ir(v, visitor, seen=seen)) for k, v in obj.items()]
+    items = [(k, walk_build_graph(v, visitor, seen=seen)) for k, v in obj.items()]
     constructor = cast("Callable[[object], object]", type(obj))
     try:
         result = constructor(items)
@@ -127,7 +131,7 @@ def _walk_sequence(
     visitor: Callable[[object], object],
     seen: set[int],
 ) -> object:
-    values = tuple(walk_ir(v, visitor, seen=seen) for v in obj)
+    values = tuple(walk_build_graph(v, visitor, seen=seen) for v in obj)
     constructor = cast("Callable[[object], object]", type(obj))
     try:
         result = constructor(values)
@@ -142,9 +146,9 @@ def _walk_set(
     seen: set[int],
 ) -> object:
     try:
-        values = {walk_ir(v, visitor, seen=seen) for v in obj}
+        values = {walk_build_graph(v, visitor, seen=seen) for v in obj}
     except TypeError:
-        values = [walk_ir(v, visitor, seen=seen) for v in obj]
+        values = [walk_build_graph(v, visitor, seen=seen) for v in obj]
     constructor = cast("Callable[[object], object]", type(obj))
     try:
         result = constructor(values)

@@ -9,8 +9,8 @@ from pydantic import ValidationError
 
 from forje.core.environment import Environment
 from forje.core.pas import Pass
-from forje.ir import IR
-from forje.ir.utils import walk_ir
+from forje.ir import BuildGraph
+from forje.ir.utils import walk_build_graph
 
 __all__ = ["DictResolver"]
 
@@ -23,8 +23,8 @@ class DictResolver(Pass):
         self._env = env
 
     @override
-    def run(self, ir: IR) -> IR:
-        return cast("IR", walk_ir(ir, self._maybe_resolve_dict))
+    def run(self, graph: BuildGraph) -> BuildGraph:
+        return cast("BuildGraph", walk_build_graph(graph, self._maybe_resolve_dict))
 
     def _maybe_resolve_dict(self, obj: object) -> object:
         if not isinstance(obj, Mapping):

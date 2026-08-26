@@ -7,9 +7,8 @@ from typing import cast, final, override
 import coloraide
 
 from forje.core.pas import Pass
-from forje.ir import IR
-from forje.ir.models import ColorNode
-from forje.ir.utils import walk_ir
+from forje.ir import BuildGraph, ColorNode
+from forje.ir.utils import walk_build_graph
 
 __all__ = ["ColorCanonicalizer"]
 
@@ -35,8 +34,8 @@ def _normalize_color_node(node: object) -> object:
 
 @final
 class ColorCanonicalizer(Pass):
-    """Normalizes all `ColorNode` instances in the IR into xyz-d65 color space."""
+    """Normalizes all color nodes in the build graph into xyz-d65 color space."""
 
     @override
-    def run(self, ir: IR) -> IR:
-        return cast("IR", walk_ir(ir, _normalize_color_node))
+    def run(self, graph: BuildGraph) -> BuildGraph:
+        return cast("BuildGraph", walk_build_graph(graph, _normalize_color_node))

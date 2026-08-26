@@ -3,50 +3,53 @@
 
 from __future__ import annotations
 
-from contextvars import ContextVar, Token
-from dataclasses import dataclass, field
-from threading import RLock
-from typing import TYPE_CHECKING, final
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Protocol, final
+
+from forje.ir import BuildGraph
 
 if TYPE_CHECKING:
-    from forje.ir import IR
+    from collections.abc import Iterator
 
-__all__ = ["Context", "context_proxy"]
+__all__ = ["BuildContext", "context", "context_scope"]
 
-_ctx: ContextVar[Context] = ContextVar("ctx")
+_ctx: ContextVar[BuildContext] = ContextVar("ctx")
+
+
+class BuildContext(Protocol):
+    """Build state for a single Forje evaluation."""
+
+    graph: BuildGraph
 
 
 @final
 @dataclass
-class Context:
-    """Mutable build state for a single Forje evaluation."""
-
-    ir: IR
-    lock: RLock = field(init=False, default_factory=RLock)
+class _Context:
+    graph: BuildGraph
 
 
-class _ContextProxy:
+@final
+class _ContextProxy(BuildContext):
     @property
-    def ir(self) -> IR:
-        return _ctx.get().ir
+    def graph(self) -> BuildGraph:
+        return _ctx.get().graph
 
-    @ir.setter
-    def ir(self, value: IR) -> None:
-        _ctx.get().ir = value
+    @graph.setter
+    def graph(self, value: BuildGraph) -> None:
+        _ctx.get().graph = value
 
-    @property
-    def lock(self) -> RLock:
-        return _ctx.get().lock
 
-    @classmethod
-    def set_context(cls, ctx: Context) -> Token[Context]:
-        """Sets the current context."""
-        return _ctx.set(ctx)
+context: BuildContext = _ContextProxy()
 
-    @classmethod
-    def reset_context(cls, token: Token[Context]) -> None:
-        """Resets the context to the state before set_context was called."""
+
+@contextmanager
+def context_scope(graph: BuildGraph | None = None) -> Iterator[BuildContext]:
+    """Yields a new build context."""
+    graph = graph or BuildGraph()
+    token = _ctx.set(_Context(graph))
+    try:
+        yield context
+    finally:
         _ctx.reset(token)
-
-
-context_proxy = _ContextProxy()
