@@ -4,11 +4,8 @@
 from __future__ import annotations
 
 import importlib.resources
-from functools import partial
 from types import FunctionType
-from typing import TYPE_CHECKING, Self, final, get_type_hints
-
-from forje.core.context import Context, context_proxy
+from typing import TYPE_CHECKING, Self, final
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -21,7 +18,7 @@ class Module:
     """Manages exporting of Python definitions and Starlark sources to the DSL."""
 
     def __init__(self, name: str | None, *, priority: int = 0) -> None:
-        """Initialize a new DSL module.
+        """Initialize a new module.
 
         Args:
             name: Starlark module name. If omitted, the exported definitions
@@ -38,10 +35,7 @@ class Module:
         *,
         name: str | None = None,
     ) -> Callable[[F], F]:
-        """Decorates a function to be exported to the DSL.
-
-        If the function signature contains a 'ctx' parameter, it is automatically
-        partially applied with the context proxy.
+        """Decorates a function to be exported.
 
         Args:
             name: An optional custom name for the exported function.
@@ -50,26 +44,18 @@ class Module:
 
         def decorator(fun: F) -> F:
             export_name = (name or "").strip() or fun.__name__
-
-            target = fun
-            hints = get_type_hints(fun)
-            for param, annotation in hints.items():
-                if annotation is Context:
-                    target = partial(fun, **{param: context_proxy})
-                    break
-
-            self.python[export_name] = target
+            self.python[export_name] = fun
             return fun
 
         return decorator
 
     def export_value(self, name: str, value: object) -> Self:
-        """Exports a static value to the DSL."""
+        """Exports a static value."""
         self.python[name] = value
         return self
 
     def export_starlark(self, package: str, resource_name: str) -> Self:
-        """Exports Starlark definitions to the DSL."""
+        """Exports Starlark definitions."""
         self.starlark.append(
             importlib.resources.files(package)
             .joinpath(resource_name)

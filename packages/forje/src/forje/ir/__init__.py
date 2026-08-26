@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
-from .models import (
-    IR,
+from .graph import (
     ArtifactNode,
+    BuildGraph,
     ColorNode,
     ColorSelector,
     ColorToken,
@@ -11,6 +11,7 @@ from .models import (
     DimensionNode,
     DimensionSelector,
     DimensionToken,
+    ImmutableMapping,
     TargetNode,
     TokenNode,
     ValueNode,
@@ -22,8 +23,8 @@ from .models import (
 )
 
 __all__ = [
-    "IR",
     "ArtifactNode",
+    "BuildGraph",
     "ColorNode",
     "ColorSelector",
     "ColorToken",
@@ -31,6 +32,7 @@ __all__ = [
     "DimensionNode",
     "DimensionSelector",
     "DimensionToken",
+    "ImmutableMapping",
     "TargetNode",
     "TokenNode",
     "ValueNode",

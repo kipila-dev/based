@@ -8,8 +8,14 @@ import coloraide
 
 from forje.core.errors import ForjeValidationError
 from forje.core.pas import Pass
-from forje.ir import IR, ColorNode, ColorSelector, ColorToken, TargetNode
-from forje.ir.models import ImmutableMapping
+from forje.ir import (
+    BuildGraph,
+    ColorNode,
+    ColorSelector,
+    ColorToken,
+    ImmutableMapping,
+    TargetNode,
+)
 from forje.wcag.models import AgainstNode, Level, Role
 
 __all__ = ["WCAGValidation"]
@@ -25,9 +31,9 @@ _WCAG_THRESHOLDS: dict[tuple[Role, Level], float] = {
 
 
 def _walk_wcag_tokens(
-    ir: IR,
+    graph: BuildGraph,
 ) -> Generator[tuple[TargetNode, ColorToken, list[AgainstNode]]]:
-    for target in ir.targets.values():
+    for target in graph.targets.values():
         for token in target.tokens.values():
             if token.kind == "color":
                 wcag_nodes = [
@@ -90,10 +96,10 @@ class WCAGValidation(Pass):
     """Validates contrast ratios for tokens with WCAG annotations."""
 
     @override
-    def run(self, ir: IR) -> IR:
+    def run(self, graph: BuildGraph) -> BuildGraph:
         errors: list[ForjeValidationError] = []
 
-        for target, token, wcag_nodes in _walk_wcag_tokens(ir):
+        for target, token, wcag_nodes in _walk_wcag_tokens(graph):
             for node in wcag_nodes:
                 errors.extend(_validate_contrast(target, token, node))
 
@@ -101,4 +107,4 @@ class WCAGValidation(Pass):
             msg = "WCAG validation failed"
             raise ExceptionGroup(msg, errors)
 
-        return ir
+        return graph

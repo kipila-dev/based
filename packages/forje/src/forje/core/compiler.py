@@ -50,9 +50,9 @@ def compile_source(
         source: Contents of the build script file.
         pipeline: Ordered list of passes to execute.
     """
-    ir = evaluate(env, source)
+    graph = evaluate(env, source)
 
     for pas in pipeline:
-        ir = ir | pas
+        graph = graph | pas
 
-    return codegen(env, ir)
+    return codegen(env, graph)

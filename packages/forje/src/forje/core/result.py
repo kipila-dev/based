@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import final
 
 from forje.core.environment import Environment
-from forje.ir import IR
+from forje.ir import BuildGraph
 
 __all__ = ["CompilationResult", "codegen"]
 
@@ -14,10 +14,7 @@ __all__ = ["CompilationResult", "codegen"]
 @final
 @dataclass
 class CompilationResult:
-    """Compilation result.
-
-    Holds generated files keyed by target id -> platform -> file path -> bytes.
-    """
+    """Compilation result."""
 
     outputs: dict[str, dict[str, dict[str, bytes]]] = field(default_factory=dict)
 
@@ -43,10 +40,10 @@ class CompilationResult:
                     yield target, platform, file_path, file_bytes
 
 
-def codegen(env: Environment, ir: IR) -> CompilationResult:
-    """Executes code generation for all targets in the given IR."""
+def codegen(env: Environment, graph: BuildGraph) -> CompilationResult:
+    """Runs code generation for all targets in the given build graph."""
     result = CompilationResult()
-    for target in ir.targets.values():
+    for target in graph.targets.values():
         result.outputs[target.id] = {}
         for artifact in target.artifacts:
             files = env.backends[artifact.platform].codegen(target, artifact)

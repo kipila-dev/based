@@ -8,8 +8,8 @@ from typing import cast, final, override
 from forje.core.environment import Environment
 from forje.core.errors import ForjeError
 from forje.core.pas import Pass
-from forje.ir import IR, TokenNode
-from forje.ir.utils import walk_ir
+from forje.ir import BuildGraph, TokenNode
+from forje.ir.utils import walk_build_graph
 
 __all__ = ["PlatformSupport", "TargetFilter", "TargetValidation", "TokenNameValidator"]
 
@@ -25,19 +25,19 @@ class TargetFilter(Pass):
         self._active_targets = active_targets or []
 
     @override
-    def run(self, ir: IR) -> IR:
+    def run(self, graph: BuildGraph) -> BuildGraph:
         if not self._active_targets:
-            return ir
+            return graph
 
-        all_targets = [t.id for t in ir.targets.values()]
+        all_targets = [t.id for t in graph.targets.values()]
         unknown_targets = [t for t in self._active_targets if t not in all_targets]
         if unknown_targets:
             noun = "target" if len(unknown_targets) == 1 else "targets"
             msg = f"Unknown {noun}: {', '.join(unknown_targets)}"
             raise ForjeError(msg)
 
-        targets = {k: v for k, v in ir.targets.items() if k in self._active_targets}
-        return dataclasses.replace(ir, targets=targets)
+        targets = {k: v for k, v in graph.targets.items() if k in self._active_targets}
+        return dataclasses.replace(graph, targets=targets)
 
 
 @final
@@ -45,18 +45,18 @@ class TargetValidation(Pass):
     """Validates target configuration constraints."""
 
     @override
-    def run(self, ir: IR) -> IR:
-        if not ir.targets:
+    def run(self, graph: BuildGraph) -> BuildGraph:
+        if not graph.targets:
             msg = "No targets defined in the build configuration"
             raise ForjeError(msg)
 
-        empty_targets = [t.id for t in ir.targets.values() if not t.tokens]
+        empty_targets = [t.id for t in graph.targets.values() if not t.tokens]
         if empty_targets:
             noun = "target" if len(empty_targets) == 1 else "targets"
             msg = f"Empty {noun}: {', '.join(empty_targets)}"
             raise ForjeError(msg)
 
-        return ir
+        return graph
 
 
 @final
@@ -67,10 +67,10 @@ class PlatformSupport(Pass):
         self._env = env
 
     @override
-    def run(self, ir: IR) -> IR:
+    def run(self, graph: BuildGraph) -> BuildGraph:
         all_platforms = self._env.backends.keys()
         active_platforms = {
-            a.platform for t in ir.targets.values() for a in t.artifacts
+            a.platform for t in graph.targets.values() for a in t.artifacts
         }
         unknown_platforms = active_platforms - all_platforms
 
@@ -79,7 +79,7 @@ class PlatformSupport(Pass):
             msg = f"No backend registered for platforms: {platforms}"
             raise ForjeError(msg)
 
-        return ir
+        return graph
 
 
 @final
@@ -89,8 +89,8 @@ class TokenNameValidator(Pass):
     _pattern = re.compile(r"^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$")
 
     @override
-    def run(self, ir: IR) -> IR:
-        return cast("IR", walk_ir(ir, self._validate_token_name))
+    def run(self, graph: BuildGraph) -> BuildGraph:
+        return cast("BuildGraph", walk_build_graph(graph, self._validate_token_name))
 
     def _validate_token_name(self, obj: object) -> object:
         if isinstance(obj, TokenNode) and not self._pattern.fullmatch(obj.name):

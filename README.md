@@ -1,6 +1,6 @@
 # Forje
 
-A compiler pipeline for design systems.
+A build system for design systems.
 
 Build scripts are written in Starlark:
 

@@ -7,15 +7,15 @@ from typing import TYPE_CHECKING
 
 import starlark
 
-from forje.core.context import Context, context_proxy
+from forje.core.context import context_scope
 from forje.core.errors import ForjeEvalError, ForjeParseError
-from forje.ir import IR
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from forje.core.dsl import Module
     from forje.core.environment import Environment
+    from forje.ir import BuildGraph
 
 __all__ = ["evaluate"]
 
@@ -98,24 +98,18 @@ def _parse_and_eval(
         raise ForjeEvalError(str(e)) from e
 
 
-def evaluate(env: Environment, source: str) -> IR:
+def evaluate(env: Environment, source: str) -> BuildGraph:
     """Evaluate a Forje build script.
 
     Args:
-        env: The build environment instance containing the standard library
-            and all successfully discovered external modules.
+        env: The build environment instance.
         source: The contents of a build.forje file as a string.
 
     Raises:
         ForjeParseError: If the source contains a Starlark syntax error.
         ForjeEvalError: If the source fails during Starlark evaluation.
     """
-    ctx = Context(ir=IR())
-    token = context_proxy.set_context(ctx)
-
-    try:
+    with context_scope() as ctx:
         module, loader = _build_dsl(env)
         _parse_and_eval("build.forje", source, module, loader)
-        return ctx.ir
-    finally:
-        context_proxy.reset_context(token)
+        return ctx.graph
