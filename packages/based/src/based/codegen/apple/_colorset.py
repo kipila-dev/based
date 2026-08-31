@@ -4,7 +4,7 @@
 from pathlib import Path
 from typing import Self, override
 
-from resforge.io import WriteSink
+from based.core.io import WriteSink
 
 from ._base import AssetNode
 from .types import AppleColor

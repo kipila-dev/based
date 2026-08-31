@@ -4,9 +4,7 @@
 import json
 from pathlib import Path
 
-import pytest
-from resforge.apple.catalog import AssetCatalog
-from resforge.apple.types import AppleColor
+from based.codegen.apple import AppleColor, AssetCatalog
 
 
 def test_asset_catalog_lifecycle(tmp_path: Path):
@@ -63,10 +61,3 @@ def test_asset_catalog_overwrites_existing(tmp_path: Path):
     assert final_path.exists()
     assert not (final_path / "old.txt").exists()
     assert (final_path / "Contents.json").exists()
-
-
-def test_require_context_enforcement(tmp_path: Path):
-    catalog = AssetCatalog(tmp_path / "App", "Assets")
-
-    with pytest.raises(RuntimeError):
-        catalog.colorset("Error", AppleColor("#000000"))

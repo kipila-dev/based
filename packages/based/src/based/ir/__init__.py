@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
+from .color import Color
 from .graph import (
     ArtifactNode,
     BuildGraph,
@@ -25,6 +26,7 @@ from .graph import (
 __all__ = [
     "ArtifactNode",
     "BuildGraph",
+    "Color",
     "ColorNode",
     "ColorSelector",
     "ColorToken",

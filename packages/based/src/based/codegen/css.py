@@ -5,12 +5,11 @@ import math
 from pathlib import Path
 from typing import final, override
 
-from resforge import Color
-from resforge.io import MemorySink
-
 from based.core.backend import Backend
+from based.core.io import MemorySink
 from based.ir import (
     ArtifactNode,
+    Color,
     ColorNode,
     ColorSelector,
     DimensionKind,

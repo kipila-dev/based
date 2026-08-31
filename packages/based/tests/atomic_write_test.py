@@ -4,7 +4,7 @@
 from pathlib import Path
 
 import pytest
-from resforge.io import atomic_write
+from based.core.io import atomic_write
 
 
 def test_atomic_replace_existing(tmp_path: Path):

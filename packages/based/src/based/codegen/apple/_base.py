@@ -7,7 +7,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Self
 
-from resforge.io import WriteSink
+from based.core.io import WriteSink
 
 
 class AssetNode(ABC):

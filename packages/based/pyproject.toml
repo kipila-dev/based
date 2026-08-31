@@ -13,14 +13,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
 authors = [{ name = "Kipila Ltd", email = "hello@kipila.dev" }]
-dependencies = [
-  "coloraide",
-  "pydantic",
-  "resforge",
-  "rich",
-  "starlark-pyo3",
-  "typer",
-]
+dependencies = ["coloraide", "pydantic", "rich", "starlark-pyo3", "typer"]
 
 [project.urls]
 Homepage = "https://kipila.dev"
@@ -48,16 +41,13 @@ token = "based.ir:token_adapter"
 wcag = "based.wcag:WCAGValidation"
 
 [project.entry-points."based.backend"]
-android = "based.backend.android:Android"
-apple = "based.backend.apple:Apple"
-compose = "based.backend.compose:Compose"
-css = "based.backend.css:CSS"
+android = "based.codegen.android.backend:Android"
+apple = "based.codegen.apple.backend:Apple"
+compose = "based.codegen.compose.backend:Compose"
+css = "based.codegen.css:CSS"
 
 [tool.hatch.version]
 path = "src/based/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/based"]
-
-[tool.uv.sources]
-resforge = { workspace = true }

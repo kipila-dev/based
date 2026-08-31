@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
-from resforge.io import atomic_write
 from rich import box
 from rich.table import Table
 
@@ -19,6 +18,7 @@ from based.core.compiler import compile_source, standard_pipeline
 from based.core.environment import Environment
 from based.core.errors import BasedError
 from based.core.frontend import BUILD_FILE_NAME
+from based.core.io import atomic_write
 from based.core.loader import load_plugins
 
 app = typer.Typer(

@@ -4,12 +4,10 @@
 import re
 from typing import final, override
 
-from resforge import Color
-from resforge.apple import Appearance, AppleColor, AssetCatalog
-from resforge.io import MemorySink
-
+from based.codegen.apple import Appearance, AppleColor, AssetCatalog
 from based.core.backend import Backend
-from based.ir import ArtifactNode, ColorNode, ColorSelector, TargetNode
+from based.core.io import MemorySink
+from based.ir import ArtifactNode, Color, ColorNode, ColorSelector, TargetNode
 from based.ir.utils import get_config
 
 _APPEARANCE_MAP: dict[ColorSelector, list[Appearance]] = {

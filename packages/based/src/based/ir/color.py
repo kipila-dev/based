@@ -4,12 +4,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import final
 
 import coloraide
 
 __all__ = ["Color"]
 
 
+@final
 @dataclass(slots=True, frozen=True)
 class Color:
     """A representation of a color, stored internally in the CIE XYZ color space."""

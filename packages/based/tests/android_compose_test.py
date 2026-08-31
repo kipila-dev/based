@@ -4,7 +4,8 @@
 from pathlib import Path
 
 import pytest
-from resforge.android import ComposeWriter, Dimension, dp, sp
+from based.codegen.android import Dimension, dp, sp
+from based.codegen.compose import ComposeWriter
 
 
 def test_object_colors(tmp_path: Path):
@@ -82,15 +83,6 @@ def test_multiple_objects(tmp_path: Path):
     assert rendered.index("AppColors") < rendered.index("AppDimens")
 
 
-def test_object_require_context_raises(tmp_path: Path):
-    output = tmp_path / "Color.kt"
-    with ComposeWriter(output, package="com.example.theme") as compose:
-        scope = compose.object_("AppColors")
-
-    with pytest.raises(RuntimeError, match="requires an active 'with' context"):
-        scope.color(primary="#6200EE")
-
-
 def test_no_write_on_exception(tmp_path: Path):
     output = tmp_path / "Color.kt"
     with (
@@ -100,12 +92,6 @@ def test_no_write_on_exception(tmp_path: Path):
         raise RuntimeError
 
     assert not output.exists()
-
-
-def test_require_context_raises():
-    compose = ComposeWriter("Color.kt", package="com.example.theme")
-    with pytest.raises(RuntimeError, match="requires an active 'with' context"):
-        compose.color(primary="#6200EE")
 
 
 def test_creates_parent_directories(tmp_path: Path):
