@@ -8,7 +8,7 @@ from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import Literal
 
-from resforge import Color
+from based.ir import Color
 
 ColorSpace = Literal["srgb", "display-p3"]
 DisplayGamut = Literal["sRGB", "display-P3"]

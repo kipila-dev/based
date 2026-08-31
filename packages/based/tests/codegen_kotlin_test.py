@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
-from resforge._codegen.kotlin import KotlinFile, KotlinObject, KotlinProperty
+from based.codegen.kotlin import KotlinFile, KotlinObject, KotlinProperty
 
 
 def test_property_render():

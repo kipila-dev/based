@@ -4,12 +4,10 @@
 from pathlib import Path
 from typing import final, override
 
-from resforge import Color
-from resforge.android import ValuesWriter
-from resforge.io import MemorySink, WriteSink
-
+from based.codegen.android import ValuesWriter
 from based.core.backend import Backend
-from based.ir import ArtifactNode, ColorNode, ColorSelector, TargetNode
+from based.core.io import MemorySink, WriteSink
+from based.ir import ArtifactNode, Color, ColorNode, ColorSelector, TargetNode
 from based.ir.utils import get_config
 
 

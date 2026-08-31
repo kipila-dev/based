@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [dependency-groups]
-dev = ["pre-commit", "pytest", "ruff", "ty"]
+dev = ["defusedxml", "pre-commit", "pytest", "ruff", "ty"]
 
 [tool.uv.workspace]
 members = ["packages/*"]

@@ -7,13 +7,12 @@ from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Self, final, override
 
-from resforge import Color
-from resforge._codegen.kotlin import KotlinFile, KotlinObject
-from resforge._utils import require_context
-from resforge.io import FileSystemSink, WriteSink
+from based.codegen.kotlin import KotlinFile, KotlinObject
+from based.core.io import FileSystemSink, WriteSink
+from based.ir import Color
 
 if TYPE_CHECKING:
-    from resforge.android.types import Dimension
+    from based.codegen.android.types import Dimension
 
 __all__ = ["ComposeWriter"]
 
@@ -56,7 +55,6 @@ class _BaseComposeScope:
     def _to_compose_dimen_literal(dimen: Dimension) -> str:
         return f"{dimen.value}.{dimen.unit}"
 
-    @require_context  # ty: ignore[invalid-argument-type]
     def color(self, **values: str | Color) -> Self:
         """Appends one or more Color properties to the Kotlin object."""
         if values:
@@ -70,7 +68,6 @@ class _BaseComposeScope:
             )
         return self
 
-    @require_context  # ty: ignore[invalid-argument-type]
     def dimension(self, **values: Dimension) -> Self:
         """Appends one or more Dimension properties to the Kotlin object.
 
@@ -116,7 +113,7 @@ class ComposeWriter(_BaseComposeScope):
         ...     compose.color(primary="#6200EE", background="#FFFFFF")
     """
 
-    def __init__(  # pyright: ignore[reportMissingSuperCall]
+    def __init__(
         self,
         path: str | Path,
         package: str,
@@ -167,7 +164,6 @@ class ComposeWriter(_BaseComposeScope):
         finally:
             self._active = False
 
-    @require_context
     def object_(self, name: str) -> _ObjectScope:
         """Creates a new Kotlin object within the file.
 

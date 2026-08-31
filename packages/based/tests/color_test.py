@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
-from resforge.color import Color
+from based.ir.color import Color
 
 
 class TestParse:

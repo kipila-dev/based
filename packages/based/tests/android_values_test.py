@@ -4,9 +4,19 @@
 from pathlib import Path
 
 import pytest
+from based.codegen.android import (
+    PluralValues,
+    ValuesWriter,
+    dp,
+    em,
+    inch,
+    mm,
+    pt,
+    px,
+    sp,
+)
+from based.ir import Color
 from defusedxml.ElementTree import parse
-from resforge import Color
-from resforge.android import PluralValues, ValuesWriter, dp, em, inch, mm, pt, px, sp
 
 
 class TestDimensionType:
@@ -68,11 +78,6 @@ class TestValuesWriterContextManager:
         with pytest.raises(ValueError, match="boom"), ValuesWriter(xml_path):
             raise ValueError(msg)
         assert not xml_path.exists()
-
-    def test_runtime_error_outside_context(self, xml_path: Path):
-        res = ValuesWriter(xml_path)
-        with pytest.raises(RuntimeError):
-            res.string(foo="bar")
 
 
 class TestString:

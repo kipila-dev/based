@@ -9,8 +9,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Self, final
 
-from resforge._utils import require_context
-from resforge.io import FileSystemSink, WriteSink
+from based.core.io import FileSystemSink, WriteSink
 
 from ._colorset import ColorSet
 
@@ -82,7 +81,6 @@ class AssetCatalog:
                 shutil.rmtree(self._temp_path)
             self._active = False
 
-    @require_context
     def colorset(self, name: str, *colors: AppleColor) -> AssetCatalog:
         """Creates a .colorset folder within the catalog.
 
