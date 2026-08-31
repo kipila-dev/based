@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
+[dependency-groups]
+dev = ["pre-commit", "pytest", "ruff", "ty"]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "ANN401",
+  "D100",
+  "D104",
+  "D105",
+  "D107",
+  "E741",
+  "PLR0911",
+  "PLR2004",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint.extend-per-file-ignores]
+"packages/*/tests/**/*.py" = [
+  "ANN001",
+  "ANN201",
+  "D101",
+  "D102",
+  "D103",
+  "EM101",
+  "S101",
+  "TRY301",
+]
+
+[tool.ruff.lint.flake8-copyright]
+notice-rgx = "(?i)(Copyright|SPDX-FileCopyrightText)"
+
+[tool.ty.environment]
+root = ["packages/"]
