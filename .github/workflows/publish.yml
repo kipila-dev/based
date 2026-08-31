@@ -20,12 +20,11 @@ jobs:
       - name: Extract package name from tag
         id: pkg
         run: echo "name=${GITHUB_REF_NAME%-v*}" >> "$GITHUB_OUTPUT"
-      - name: Replace symlinked README with real file
+      - name: Replace symlinked README with real file for basedbuild
         if: steps.pkg.outputs.name == 'basedbuild'
         run: |
-          PKG_DIR="packages/${{ steps.pkg.outputs.name }}"
-          rm -f "$PKG_DIR/README.md"
-          cp README.md "$PKG_DIR/README.md"
+          rm -f packages/based/README.md
+          cp README.md packages/based/README.md
       - name: Build package
         run: uv build --package ${{ steps.pkg.outputs.name }} --out-dir dist/
       - name: Publish to PyPI
