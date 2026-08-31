@@ -45,4 +45,4 @@ docstring-code-format = true
 notice-rgx = "(?i)(Copyright|SPDX-FileCopyrightText)"
 
 [tool.ty.environment]
-root = ["packages"]
+root = ["packages/"]

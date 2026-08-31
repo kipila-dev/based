@@ -3,17 +3,17 @@
 
 import os
 import shutil
-from collections.abc import Generator
+from collections.abc import Iterator
 from contextlib import contextmanager, suppress
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import IO, Protocol, runtime_checkable
+from typing import IO, Protocol, override, runtime_checkable
 
 __all__ = ["FileSystemSink", "MemorySink", "WriteSink", "atomic_write"]
 
 
 @contextmanager
-def atomic_write(target_path: str | Path) -> Generator[IO[bytes], None, None]:
+def atomic_write(target_path: str | Path) -> Iterator[IO[bytes]]:
     """Yields a temporary file, then atomically replaces target_path on success.
 
     Preserves file permissions if `target_path` already exists.
@@ -21,7 +21,6 @@ def atomic_write(target_path: str | Path) -> Generator[IO[bytes], None, None]:
     target_path = Path(target_path)
     target_path.parent.mkdir(parents=True, exist_ok=True)
 
-    temp_path = None
     try:
         with NamedTemporaryFile(
             dir=target_path.parent,
@@ -53,35 +52,35 @@ def atomic_write(target_path: str | Path) -> Generator[IO[bytes], None, None]:
             finally:
                 os.close(dir_fd)
     finally:
-        if temp_path and temp_path.exists():
+        if temp_path.exists():
             with suppress(OSError):
                 temp_path.unlink()
 
 
 @runtime_checkable
 class WriteSink(Protocol):
-    """An interface for writing binary content to a file path."""
+    """An interface for writing binary content to a filepath."""
 
     def write(self, path: Path, content: bytes) -> None:
         """Write the given binary content to the specified path."""
         ...
 
 
-class FileSystemSink:
-    """A write sink that writes directly to the file system."""
+class FileSystemSink(WriteSink):
+    """A write sink that writes directly to the filesystem."""
 
+    @override
     def write(self, path: Path, content: bytes) -> None:
-        """Atomically write binary content to a physical file path."""
         with atomic_write(path) as f:
             f.write(content)
 
 
-class MemorySink:
-    """A write sink that stores files in a dictionary."""
+class MemorySink(WriteSink):
+    """A write sink that writes files into a dictionary."""
 
     def __init__(self) -> None:
         self.files: dict[str, bytes] = {}
 
+    @override
     def write(self, path: Path, content: bytes) -> None:
-        """Store the binary content in memory using the string path as a key."""
         self.files[str(path)] = content

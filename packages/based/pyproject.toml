@@ -1,0 +1,63 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "basedbuild"
+dynamic = ["version"]
+description = "Build System for Design"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+authors = [{ name = "Kipila Ltd", email = "hello@kipila.dev" }]
+dependencies = [
+  "coloraide",
+  "pydantic",
+  "resforge",
+  "rich",
+  "starlark-pyo3",
+  "typer",
+]
+
+[project.urls]
+Homepage = "https://kipila.dev"
+Repository = "https://github.com/kipila-dev/based"
+
+[project.scripts]
+based = "based.cli.main:app"
+
+[project.entry-points."based.dsl"]
+color = "based.dsl.color:module"
+default = "based.dsl.default:module"
+dimen = "based.dsl.dimen:module"
+stdlib = "based.dsl.stdlib:module"
+wcag = "based.wcag:module"
+
+[project.entry-points."based.adapter"]
+against = "based.wcag.models:against_adapter"
+artifact = "based.ir:artifact_adapter"
+color = "based.ir:color_adapter"
+dimen = "based.ir:dimen_adapter"
+target = "based.ir:target_adapter"
+token = "based.ir:token_adapter"
+
+[project.entry-points."based.pass"]
+wcag = "based.wcag:WCAGValidation"
+
+[project.entry-points."based.backend"]
+android = "based.backend.android:Android"
+apple = "based.backend.apple:Apple"
+compose = "based.backend.compose:Compose"
+css = "based.backend.css:CSS"
+
+[tool.hatch.version]
+path = "src/based/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/based"]
+
+[tool.uv.sources]
+resforge = { workspace = true }

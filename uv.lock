@@ -4,9 +4,9 @@ requires-python = ">=3.12"
 
 [manifest]
 members = [
-    "forje",
-    "forje-lsp",
-    "forje-tailwind",
+    "basedbuild",
+    "basedbuild-lsp",
+    "basedbuild-tailwind",
     "resforge",
 ]
 
@@ -44,6 +44,52 @@ sdist = { url = "https://files.pythonhosted.org/packages/9a/8e/82a0fe20a541c0314
 wheels = [
     { url = "https://files.pythonhosted.org/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl", hash = "sha256:c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309", size = 67548, upload-time = "2026-03-19T14:22:23.645Z" },
 ]
+
+[[package]]
+name = "basedbuild"
+source = { editable = "packages/based" }
+dependencies = [
+    { name = "coloraide" },
+    { name = "pydantic" },
+    { name = "resforge" },
+    { name = "rich" },
+    { name = "starlark-pyo3" },
+    { name = "typer" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "coloraide" },
+    { name = "pydantic" },
+    { name = "resforge", editable = "packages/resforge" },
+    { name = "rich" },
+    { name = "starlark-pyo3" },
+    { name = "typer" },
+]
+
+[[package]]
+name = "basedbuild-lsp"
+source = { editable = "packages/based-lsp" }
+dependencies = [
+    { name = "basedbuild" },
+    { name = "pygls" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "basedbuild", editable = "packages/based" },
+    { name = "pygls" },
+]
+
+[[package]]
+name = "basedbuild-tailwind"
+source = { editable = "packages/based-tailwind" }
+dependencies = [
+    { name = "basedbuild" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "basedbuild", editable = "packages/based" }]
 
 [[package]]
 name = "cattrs"
@@ -111,52 +157,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/6d/30/03b03951873a1a0ff
 wheels = [
     { url = "https://files.pythonhosted.org/packages/01/a4/9b63d595d748e3aff8812b65eacc1a2c4bd90b7c2012e08e72373b4835eb/filelock-3.32.4-py3-none-any.whl", hash = "sha256:22e58ca3b1ae3b98993b762d7338367ae64fe50252bf78d59da3bfebcdf1cedd", size = 99864, upload-time = "2026-08-23T17:37:53.913Z" },
 ]
-
-[[package]]
-name = "forje"
-source = { editable = "packages/forje" }
-dependencies = [
-    { name = "coloraide" },
-    { name = "pydantic" },
-    { name = "resforge" },
-    { name = "rich" },
-    { name = "starlark-pyo3" },
-    { name = "typer" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "coloraide" },
-    { name = "pydantic" },
-    { name = "resforge", editable = "packages/resforge" },
-    { name = "rich" },
-    { name = "starlark-pyo3" },
-    { name = "typer" },
-]
-
-[[package]]
-name = "forje-lsp"
-source = { editable = "packages/forje-lsp" }
-dependencies = [
-    { name = "forje" },
-    { name = "pygls" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "forje", editable = "packages/forje" },
-    { name = "pygls" },
-]
-
-[[package]]
-name = "forje-tailwind"
-source = { editable = "packages/forje-tailwind" }
-dependencies = [
-    { name = "forje" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "forje", editable = "packages/forje" }]
 
 [[package]]
 name = "identify"

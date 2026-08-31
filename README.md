@@ -1,6 +1,6 @@
-# Forje
+# based.
 
-A build system for design systems.
+`based` is a Build System for Design.
 
 Build scripts are written in Starlark:
 
@@ -18,20 +18,20 @@ target(
 ## Installation
 
 ```bash
-pip install forje
+pip install basedbuild
 ```
 
 ## Usage
 
-Create a `build.forje` in your project root and run:
+Create a `build.based` in your project root and run:
 
 ```bash
-forje build
+based build
 ```
 
 ## WCAG Contrast Validation
 
-Forje supports accessibility testing by letting you declare contrast
+`based` supports accessibility testing by letting you declare contrast
 requirements using the `wcag` annotations.
 
 ```starlark
@@ -54,34 +54,34 @@ target(
 )
 ```
 
-## Extending Forje
+## Extending `based`
 
 Plugin interface is exposed via Python entry points. For a reference plugin
-implementation, see the built-in `forje.wcag` module.
+implementation, see the built-in `wcag` module.
 
 ```toml
 # DSL extension
-[project.entry-points."forje.dsl"]
+[project.entry-points."based.dsl"]
 myplugin = "myplugin.dsl:myplugin_module"
 
 # Type adapter
-[project.entry-points."forje.adapter"]
+[project.entry-points."based.adapter"]
 mynode = "myplugin.models:mynode_adapter"
 
 # Compiler pass
-[project.entry-points."forje.pass"]
+[project.entry-points."based.pass"]
 myplugin = "myplugin.passes:MyValidation"
 
 # Platform backend
-[project.entry-points."forje.backend"]
+[project.entry-points."based.backend"]
 myplatform = "myplugin.backend:MyPlatformBackend"
 ```
 
-The following plugins are maintained alongside Forje and can be installed
+The following plugins are maintained alongside `based` and can be installed
 directly:
 
-- [`forje-tailwind`](https://github.com/kipila-dev/forje/tree/main/packages/forje-tailwind):
-  Tailwind CSS color palette
+- [`basedbuild-tailwind`](https://github.com/kipila-dev/based/tree/main/packages/based-tailwind):
+  Tailwind CSS v4 color palette
 
 ## Advanced Example
 
