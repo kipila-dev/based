@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "basedbuild-lsp"
+dynamic = ["version"]
+description = "Based Language Server Protocol"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+authors = [{ name = "Kipila Ltd", email = "hello@kipila.dev" }]
+dependencies = ["basedbuild", "pygls"]
+
+[project.urls]
+Homepage = "https://kipila.dev"
+Repository = "https://github.com/kipila-dev/based"
+
+[project.scripts]
+based-lsp = "based_lsp.server:main"
+
+[tool.hatch.version]
+path = "src/based_lsp/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/based_lsp"]
+
+[tool.uv.sources]
+basedbuild = { workspace = true }

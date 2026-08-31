@@ -37,7 +37,7 @@ dependencies = ["coloraide"]
 
 [project.urls]
 Homepage = "https://kipila.dev"
-Repository = "https://github.com/kipila-dev/forje"
+Repository = "https://github.com/kipila-dev/based"
 
 [dependency-groups]
 dev = ["defusedxml"]
