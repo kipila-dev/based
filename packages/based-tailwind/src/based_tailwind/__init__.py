@@ -3,7 +3,7 @@
 
 from based.core.dsl import Module
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __all__ = ["module"]
 
 module = Module(name="tailwind").export_starlark(
