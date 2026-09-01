@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
+import os
 import platform
 import sys
 import time
@@ -27,10 +28,19 @@ app = typer.Typer(
     add_completion=False,
 )
 
+_project_dir_arg = typer.Argument(
+    help="Project directory. Defaults to current directory.",
+)
 
-def _find_build_file() -> Path | None:
-    candidate = Path.cwd() / BUILD_FILE_NAME
-    return candidate if candidate.exists() else None
+
+def _find_build_file(path: Path | None = None) -> Path | None:
+    path = path or Path.cwd()
+    directories = [path, *path.parents]
+    for directory in directories:
+        candidate = directory / BUILD_FILE_NAME
+        if candidate.is_file():
+            return candidate.resolve()
+    return None
 
 
 def _version_callback(*, value: bool) -> None:
@@ -56,17 +66,27 @@ def main(
 
 @app.command()
 def build(
+    path: Annotated[Path | None, _project_dir_arg] = None,
     targets: Annotated[
         list[str] | None,
-        typer.Option("--target", help="Target to build."),
+        typer.Option(
+            "--target",
+            help=(
+                "Target to build."
+                " Can be specified multiple times to build multiple targets."
+                " Defaults to all targets."
+            ),
+        ),
     ] = None,
 ) -> None:
     """Build design system resources."""
-    build_file = _find_build_file()
+    build_file = _find_build_file(path)
 
     if build_file is None:
-        error("build.based not found in current directory.")
+        error("build.based not found.")
         raise typer.Exit(code=1)
+
+    os.chdir(build_file.parent)
 
     try:
         source = build_file.read_text(encoding="utf-8")
@@ -83,7 +103,8 @@ def build(
 
         for _, _, file_path, file_bytes in result.walk():
             with atomic_write(file_path) as f:
-                _ = f.write(file_bytes)
+                f.write(file_bytes)
+
     except* BasedError as eg:
         for e in eg.exceptions:
             notes = " ".join(getattr(e, "__notes__", []))
@@ -95,7 +116,9 @@ def build(
 
 
 @app.command()
-def doctor() -> None:
+def doctor(
+    path: Annotated[Path | None, _project_dir_arg] = None,
+) -> None:
     """Diagnose the environment and installed plugins."""
     try:
         env = Environment(*load_plugins())
@@ -106,21 +129,22 @@ def doctor() -> None:
     table = Table(box=box.SIMPLE, show_header=False, pad_edge=False)
     table.add_column(style="dim")
     table.add_column(style="bold")
+
     table.add_row("Version", __version__)
     table.add_row("Python version", sys.version.split()[0])
     table.add_row("Platform", platform.platform())
+
     table.add_row()
     table.add_row("DSL modules", ",".join(m.name for m in env.modules if m.name))
     table.add_row("Backends", ",".join(env.backends))
     table.add_row("Passes", ",".join(type(p).__name__ for p in env.passes))
     table.add_row("Adapters", ",".join(env.adapters.keys()))
-    console.print(table)
 
-    build_file = _find_build_file()
-    if build_file:
-        success(f"{BUILD_FILE_NAME} found at {build_file}")
-    else:
-        error(f"{BUILD_FILE_NAME} not found in current directory")
+    table.add_row()
+    build_file = _find_build_file(path)
+    table.add_row("Build file", str(build_file or "not found"))
+
+    console.print(table)
 
 
 if __name__ == "__main__":
