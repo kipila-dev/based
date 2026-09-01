@@ -59,7 +59,7 @@ def atomic_write(target_path: str | Path) -> Iterator[IO[bytes]]:
 
 @runtime_checkable
 class WriteSink(Protocol):
-    """An interface for writing binary content to a filepath."""
+    """Writes binary content to a filepath."""
 
     def write(self, path: Path, content: bytes) -> None:
         """Write the given binary content to the specified path."""
@@ -67,7 +67,7 @@ class WriteSink(Protocol):
 
 
 class FileSystemSink(WriteSink):
-    """A write sink that writes directly to the filesystem."""
+    """Writes files directly to the filesystem."""
 
     @override
     def write(self, path: Path, content: bytes) -> None:
@@ -76,7 +76,7 @@ class FileSystemSink(WriteSink):
 
 
 class MemorySink(WriteSink):
-    """A write sink that writes files into a dictionary."""
+    """Writes files into a dictionary."""
 
     def __init__(self) -> None:
         self.files: dict[str, bytes] = {}
