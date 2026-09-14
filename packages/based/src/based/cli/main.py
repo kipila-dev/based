@@ -83,7 +83,7 @@ def build(
     build_file = _find_build_file(path)
 
     if build_file is None:
-        error("build.based not found.")
+        error(f"{BUILD_FILE_NAME} not found.")
         raise typer.Exit(code=1)
 
     os.chdir(build_file.parent)
@@ -91,7 +91,7 @@ def build(
     try:
         source = build_file.read_text(encoding="utf-8")
     except OSError as e:
-        error(f"Could not read build.based: {e.strerror}")
+        error(f"Could not read {BUILD_FILE_NAME}: {e.strerror}")
         raise typer.Exit(code=1) from e
 
     start = time.perf_counter()
