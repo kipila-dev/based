@@ -19,7 +19,7 @@ from based.core.compiler import compile_source, standard_pipeline
 from based.core.environment import Environment
 from based.core.errors import BasedError
 from based.core.frontend import BUILD_FILE_NAME
-from based.core.io import atomic_write
+from based.core.io import FileSystemSink
 from based.core.loader import load_plugins
 
 app = typer.Typer(
@@ -100,10 +100,10 @@ def build(
         env = Environment(*load_plugins())
         pipeline = standard_pipeline(env, targets)
         result = compile_source(source, env, pipeline)
+        sink = FileSystemSink()
 
         for _, _, file_path, file_bytes in result.walk():
-            with atomic_write(file_path) as f:
-                f.write(file_bytes)
+            sink.write(Path(file_path), file_bytes)
 
     except* BasedError as eg:
         for e in eg.exceptions:

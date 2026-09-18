@@ -20,6 +20,7 @@ def atomic_write(target_path: str | Path) -> Iterator[IO[bytes]]:
     """
     target_path = Path(target_path)
     target_path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = None
 
     try:
         with NamedTemporaryFile(
@@ -52,7 +53,7 @@ def atomic_write(target_path: str | Path) -> Iterator[IO[bytes]]:
             finally:
                 os.close(dir_fd)
     finally:
-        if temp_path.exists():
+        if temp_path is not None and temp_path.exists():
             with suppress(OSError):
                 temp_path.unlink()
 
