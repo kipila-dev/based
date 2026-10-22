@@ -3,7 +3,7 @@
 
 import os
 import shutil
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager, suppress
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -13,7 +13,7 @@ __all__ = ["FileSystemSink", "MemorySink", "WriteSink", "atomic_write"]
 
 
 @contextmanager
-def atomic_write(target_path: str | Path) -> Iterator[IO[bytes]]:
+def atomic_write(target_path: str | Path) -> Generator[IO[bytes]]:
     """Yields a temporary file, then atomically replaces target_path on success.
 
     Preserves file permissions if `target_path` already exists.

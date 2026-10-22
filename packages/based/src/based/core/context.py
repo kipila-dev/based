@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Protocol, final, runtime_checkable
 from based.ir import BuildGraph
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator
 
 __all__ = ["BuildContext", "context", "context_scope"]
 
@@ -46,7 +46,7 @@ context: BuildContext = _ContextProxy()
 
 
 @contextmanager
-def context_scope(graph: BuildGraph | None = None) -> Iterator[BuildContext]:
+def context_scope(graph: BuildGraph | None = None) -> Generator[BuildContext]:
     """Yields a new build context."""
     graph = graph or BuildGraph()
     token = _ctx.set(_Context(graph))

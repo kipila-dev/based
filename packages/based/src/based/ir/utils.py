@@ -4,7 +4,7 @@
 import dataclasses
 from collections.abc import Callable, Mapping, Sequence
 from collections.abc import Set as AbstractSet
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, overload
 
 from based.ir.graph import ImmutableMapping
 
@@ -47,6 +47,36 @@ def walk_build_graph(
         return _walk_set(obj, visitor, seen)
 
     return visitor(obj)
+
+
+@overload
+def get_config(
+    config: ImmutableMapping[str, object],
+    key: str,
+    default: str,
+    *,
+    strip: bool = ...,
+) -> str: ...
+
+
+@overload
+def get_config(
+    config: ImmutableMapping[str, object],
+    key: str,
+    default: bool,  # noqa: FBT001
+    *,
+    strip: bool = ...,
+) -> bool: ...
+
+
+@overload
+def get_config(
+    config: ImmutableMapping[str, object],
+    key: str,
+    default: int,
+    *,
+    strip: bool = ...,
+) -> int: ...
 
 
 def get_config[T](
