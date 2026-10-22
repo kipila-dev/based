@@ -1,0 +1,151 @@
+# SPDX-FileCopyrightText: 2026 Kipila Ltd
+# SPDX-License-Identifier: Apache-2.0
+
+import os
+import platform
+import sys
+import time
+from pathlib import Path
+from typing import Annotated
+
+import typer
+from rich import box
+from rich.table import Table
+
+from based import __version__
+from based.cli.ui import console, error, success
+from based.cli.utils import format_elapsed
+from based.core.compiler import compile_source, standard_pipeline
+from based.core.environment import Environment
+from based.core.errors import BasedError
+from based.core.frontend import BUILD_FILE_NAME
+from based.core.io import FileSystemSink
+from based.core.loader import load_plugins
+
+app = typer.Typer(
+    name="based",
+    no_args_is_help=True,
+    add_completion=False,
+)
+
+_project_dir_arg = typer.Argument(
+    help="Project directory. Defaults to current directory.",
+)
+
+
+def _find_build_file(path: Path | None = None) -> Path | None:
+    path = path or Path.cwd()
+    directories = [path, *path.parents]
+    for directory in directories:
+        candidate = directory / BUILD_FILE_NAME
+        if candidate.is_file():
+            return candidate.resolve()
+    return None
+
+
+def _version_callback(*, value: bool) -> None:
+    if value:
+        console.print(f"based {__version__}")
+        raise typer.Exit
+
+
+@app.callback()
+def main(
+    _: Annotated[
+        bool | None,
+        typer.Option(
+            "--version",
+            callback=_version_callback,
+            is_eager=True,
+            help="Show version and exit.",
+        ),
+    ] = None,
+) -> None:
+    """Build design system resources from Starlark definitions."""
+
+
+@app.command()
+def build(
+    path: Annotated[Path | None, _project_dir_arg] = None,
+    targets: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--target",
+            help=(
+                "Target to build."
+                " Can be specified multiple times to build multiple targets."
+                " Defaults to all targets."
+            ),
+        ),
+    ] = None,
+) -> None:
+    """Build design system resources."""
+    build_file = _find_build_file(path)
+
+    if build_file is None:
+        error(f"{BUILD_FILE_NAME} not found.")
+        raise typer.Exit(code=1)
+
+    os.chdir(build_file.parent)
+
+    try:
+        source = build_file.read_text(encoding="utf-8")
+    except OSError as e:
+        error(f"Could not read {BUILD_FILE_NAME}: {e.strerror}")
+        raise typer.Exit(code=1) from e
+
+    start = time.perf_counter()
+
+    try:
+        env = Environment(*load_plugins())
+        pipeline = standard_pipeline(env, targets)
+        result = compile_source(source, env, pipeline)
+        sink = FileSystemSink()
+
+        for _, _, file_path, file_bytes in result.walk():
+            sink.write(Path(file_path), file_bytes)
+
+    except* BasedError as eg:
+        for e in eg.exceptions:
+            notes = " ".join(getattr(e, "__notes__", []))
+            error(f"{e} {notes}".strip())
+        raise typer.Exit(code=1) from eg
+
+    elapsed = time.perf_counter() - start
+    success(f"Build succeeded in {format_elapsed(elapsed)}")
+
+
+@app.command()
+def doctor(
+    path: Annotated[Path | None, _project_dir_arg] = None,
+) -> None:
+    """Diagnose the environment and installed plugins."""
+    try:
+        env = Environment(*load_plugins())
+    except BasedError as e:
+        error(f"Failed to load plugins: {e}")
+        raise typer.Exit(code=1) from e
+
+    table = Table(box=box.SIMPLE, show_header=False, pad_edge=False)
+    table.add_column(style="dim")
+    table.add_column(style="bold")
+
+    table.add_row("Version", __version__)
+    table.add_row("Python version", sys.version.split()[0])
+    table.add_row("Platform", platform.platform())
+
+    table.add_row()
+    table.add_row("DSL modules", ",".join(m.name for m in env.modules if m.name))
+    table.add_row("Backends", ",".join(env.backends))
+    table.add_row("Passes", ",".join(type(p).__name__ for p in env.passes))
+    table.add_row("Adapters", ",".join(env.adapters.keys()))
+
+    table.add_row()
+    build_file = _find_build_file(path)
+    table.add_row("Build file", str(build_file or "not found"))
+
+    console.print(table)
+
+
+if __name__ == "__main__":
+    app()
