@@ -30,7 +30,7 @@ stdlib = "based.dsl.stdlib:module"
 wcag = "based.wcag:module"
 
 [project.entry-points."based.adapter"]
-against = "based.wcag.models:against_adapter"
+contrast = "based.wcag.models:contrast_adapter"
 artifact = "based.ir:artifact_adapter"
 color = "based.ir:color_adapter"
 dimen = "based.ir:dimen_adapter"

@@ -42,9 +42,8 @@ primary = Token("primary", Color("#0284C7"))
 text = Token(
     "text",
     Color("#1E293B"),
-    # Will raise a validation error if text fails to meet the AA contrast
-    # ratio against surface.
-    annotations=wcag.against(surface, role=wcag.Role.Text, level=wcag.Level.AA)
+    # Raises a validation error if text fails to meet the AA contrast ratio against surface.
+    annotations=wcag.contrast(surface, role=wcag.Role.Text, level=wcag.Level.AA)
 )
 
 target(

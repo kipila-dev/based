@@ -8,14 +8,14 @@ from pydantic.dataclasses import dataclass
 
 from based.ir import ColorToken
 
-__all__ = ["AgainstNode", "Level", "Role", "against_adapter"]
+__all__ = ["ContrastNode", "Level", "Role", "contrast_adapter"]
 
 Role = Literal["text", "large_text", "non_text"]
 Level = Literal["aa", "aaa"]
 
 
 @dataclass(frozen=True, config=ConfigDict(extra="forbid"))
-class AgainstNode:
+class ContrastNode:
     """A WCAG contrast requirement."""
 
     token: ColorToken
@@ -23,4 +23,4 @@ class AgainstNode:
     level: Level = "aa"
 
 
-against_adapter = TypeAdapter(AgainstNode)
+contrast_adapter = TypeAdapter(ContrastNode)

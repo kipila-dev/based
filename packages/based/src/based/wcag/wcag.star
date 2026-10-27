@@ -17,26 +17,29 @@ Level = struct(
     AAA=_Level("aaa"),
 )
 
-AgainstRecord = record(token=TokenRecord, role=_Role, level=_Level)
+ContrastRecord = record(token=TokenRecord, role=_Role, level=_Level)
 
 
-def against(
+def contrast(
     token: TokenRecord,
     *,
     role: _Role = Role.Text,
     level: _Level = Level.AA,
-) -> AgainstRecord:
-    token = TokenRecord(
-        name=token.name,
-        kind=token.kind,
-        variants=token.variants,
-        annotations=[],
+) -> ContrastRecord:
+    return ContrastRecord(
+        token=TokenRecord(
+            name=token.name,
+            kind=token.kind,
+            variants=token.variants,
+            annotations=[],
+        ),
+        role=role,
+        level=level,
     )
-    return AgainstRecord(token=token, role=role, level=level)
 
 
 wcag = struct(
-    against=against,
+    contrast=contrast,
     Role=Role,
     Level=Level,
 )

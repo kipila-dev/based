@@ -16,7 +16,7 @@ from based.ir import (
     ImmutableMapping,
     TargetNode,
 )
-from based.wcag.models import AgainstNode, Level, Role
+from based.wcag.models import ContrastNode, Level, Role
 
 __all__ = ["WCAGValidation"]
 
@@ -32,12 +32,12 @@ _WCAG_THRESHOLDS: dict[tuple[Role, Level], float] = {
 
 def _walk_wcag_tokens(
     graph: BuildGraph,
-) -> Generator[tuple[TargetNode, ColorToken, list[AgainstNode]]]:
+) -> Generator[tuple[TargetNode, ColorToken, list[ContrastNode]]]:
     for target in graph.targets.values():
         for token in target.tokens.values():
             if token.kind == "color":
                 wcag_nodes = [
-                    n for n in token.annotations if isinstance(n, AgainstNode)
+                    n for n in token.annotations if isinstance(n, ContrastNode)
                 ]
                 if wcag_nodes:
                     yield target, token, wcag_nodes
@@ -56,34 +56,34 @@ def _expand_mapping(
     }
 
 
-def _make_coloraide_color(node: ColorNode) -> coloraide.Color:
+def _to_coloraide_color(node: ColorNode) -> coloraide.Color:
     return coloraide.Color(node.space, node.coords, node.alpha)
 
 
 def _validate_contrast(
     target: TargetNode,
     token: ColorToken,
-    against: AgainstNode,
+    contrast: ContrastNode,
 ) -> list[BasedValidationError]:
     errors: list[BasedValidationError] = []
 
-    variants = token.variants.keys() | against.token.variants.keys()
+    variants = token.variants.keys() | contrast.token.variants.keys()
     token_expanded = _expand_mapping(token.variants)
-    against_expanded = _expand_mapping(against.token.variants)
+    contrast_expanded = _expand_mapping(contrast.token.variants)
     token_mapping = {k: v for k, v in token_expanded.items() if k in variants}
-    against_mapping = {k: v for k, v in against_expanded.items() if k in variants}
-    required_contrast = _WCAG_THRESHOLDS[(against.role, against.level)]
+    contrast_mapping = {k: v for k, v in contrast_expanded.items() if k in variants}
+    required_contrast = _WCAG_THRESHOLDS[(contrast.role, contrast.level)]
 
     for variant in variants:
-        token_color = _make_coloraide_color(token_mapping[variant])
-        against_color = _make_coloraide_color(against_mapping[variant])
-        contrast_ratio = token_color.contrast(against_color, "wcag21")
+        token_color = _to_coloraide_color(token_mapping[variant])
+        contrast_color = _to_coloraide_color(contrast_mapping[variant])
+        contrast_ratio = token_color.contrast(contrast_color, "wcag21")
 
         if contrast_ratio < required_contrast:
             msg = (
-                f"{target.id}: WCAG {against.level.upper()} contrast failure "
-                f"({against.role}, {variant}): "
-                f"'{token.name}' against '{against.token.name}' "
+                f"{target.id}: WCAG {contrast.level.upper()} contrast failure "
+                f"({contrast.role}, {variant}): "
+                f"'{token.name}' against '{contrast.token.name}' "
                 f"is {contrast_ratio:.2f}:1, requires ≥ {required_contrast:.1f}:1"
             )
             errors.append(BasedValidationError(msg))
