@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Kipila Ltd
 # SPDX-License-Identifier: Apache-2.0
 
-import os
 import platform
 import sys
 import time
@@ -86,8 +85,6 @@ def build(
         error(f"{BUILD_FILE_NAME} not found.")
         raise typer.Exit(code=1)
 
-    os.chdir(build_file.parent)
-
     try:
         source = build_file.read_text(encoding="utf-8")
     except OSError as e:
@@ -103,7 +100,7 @@ def build(
 
         result = compile_source(source, env, pipeline)
         for _, _, file_path, file_bytes in result.walk():
-            sink.write(Path(file_path), file_bytes)
+            sink.write(build_file.parent / Path(file_path), file_bytes)
 
         elapsed = time.perf_counter() - start
         success(f"Build succeeded in {format_elapsed(elapsed)}")
