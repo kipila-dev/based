@@ -94,16 +94,19 @@ def build(
         error(f"Could not read {BUILD_FILE_NAME}: {e.strerror}")
         raise typer.Exit(code=1) from e
 
-    start = time.perf_counter()
-
     try:
+        start = time.perf_counter()
+
         env = Environment(*load_plugins())
         pipeline = standard_pipeline(env, targets)
-        result = compile_source(source, env, pipeline)
         sink = FileSystemSink()
 
+        result = compile_source(source, env, pipeline)
         for _, _, file_path, file_bytes in result.walk():
             sink.write(Path(file_path), file_bytes)
+
+        elapsed = time.perf_counter() - start
+        success(f"Build succeeded in {format_elapsed(elapsed)}")
 
     except* BasedError as eg:
         for e in eg.exceptions:
@@ -111,14 +114,9 @@ def build(
             error(f"{e} {notes}".strip())
         raise typer.Exit(code=1) from eg
 
-    elapsed = time.perf_counter() - start
-    success(f"Build succeeded in {format_elapsed(elapsed)}")
-
 
 @app.command()
-def doctor(
-    path: Annotated[Path | None, _project_dir_arg] = None,
-) -> None:
+def env(path: Annotated[Path | None, _project_dir_arg] = None) -> None:
     """Diagnose the environment and installed plugins."""
     try:
         env = Environment(*load_plugins())
@@ -130,15 +128,15 @@ def doctor(
     table.add_column(style="dim")
     table.add_column(style="bold")
 
-    table.add_row("Version", __version__)
-    table.add_row("Python version", sys.version.split()[0])
+    table.add_row("Based", __version__)
+    table.add_row("Python", sys.version.split()[0])
     table.add_row("Platform", platform.platform())
 
     table.add_row()
-    table.add_row("DSL modules", ",".join(m.name for m in env.modules if m.name))
-    table.add_row("Backends", ",".join(env.backends))
-    table.add_row("Passes", ",".join(type(p).__name__ for p in env.passes))
-    table.add_row("Adapters", ",".join(env.adapters.keys()))
+    table.add_row("DSL modules", ", ".join(m.name for m in env.modules if m.name))
+    table.add_row("Backends", ", ".join(env.backends))
+    table.add_row("Passes", ", ".join(type(p).__name__ for p in env.passes))
+    table.add_row("Adapters", ", ".join(env.adapters.keys()))
 
     table.add_row()
     build_file = _find_build_file(path)
